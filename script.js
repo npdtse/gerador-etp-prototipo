@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabProgressTextEl = document.getElementById('tabProgressText');
     const tabProgressWrapper = document.getElementById('tabProgressWrapper');
 
-    // --- INÍCIO: Seletores do Modal de Configurações de IA ---
+    // Seletores do Modal de Configurações de IA ---
     const aiSettingsModal = document.getElementById('aiSettingsModal');
     const useAiRadioYes = document.getElementById('useAiRadioYes');
     const useAiRadioNo = document.getElementById('useAiRadioNo');
@@ -27,15 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const addModelButton = document.getElementById('addModelButton');
     const testApiConnectionButton = document.getElementById('testApiConnectionButton');
     const testConnectionResult = document.getElementById('testConnectionResult');
-    // --- FIM: Seletores do Modal de Configurações de IA ---
+
+    // Recursos
+    const btnGuiaSobre = document.getElementById('btnAbrirGuiaRapido');
+    if (btnGuiaSobre) btnGuiaSobre.addEventListener('click', () => window.open('guia_rapido.html', '_blank'));
 
     // Bibliotecas externas
     const { Packer, Document, Paragraph, TextRun, Table, TableCell, TableRow, HeadingLevel, WidthType, BorderStyle, VerticalAlign, HeightRule } = window.docx;
 
-    // --- INÍCIO: Variáveis Globais ---
+    // Variáveis Globais ---
     let aiConfig = {}; // Será preenchida pela função loadAiSettings
     let currentEtpFilename = null; // Armazena o nome do arquivo atual
-    // --- FIM: Variáveis Globais ---
+    let isAppInitializing = false;
 
 
     // --- FUNÇÕES AUXILIARES ---
@@ -54,39 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Se não tem dados, desabilita (fica cinza)
                 btnContinue.disabled = true;
             }
-        }
-    }
-    
-    function updateContextBanner() {
-        const activeTab = document.querySelector('.tab-content.active');
-        const banner = document.getElementById('contextBanner');
-        if (!activeTab || !banner) return;
-
-        const isSimplificado = document.body.classList.contains('etp-simplificado-mode');
-        banner.style.display = 'none'; // Começa oculto
-        banner.innerHTML = '';
-
-        // 1. Verifica se o CAPÍTULO INTEIRO está inativo no modo Simplificado
-        if (isSimplificado && activeTab.classList.contains('simplificado-hide')) {
-            banner.style.display = 'block';
-            banner.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Atenção:</strong> Este capítulo não é aplicável ao <strong>ETP Simplificado</strong> e não precisa ser preenchido.`;
-            return;
-        }
-
-        // 2. Verifica se há ITENS ESPECÍFICOS ocultos dentro do capítulo ativo
-        let hasHiddenItems = false;
-        if (isSimplificado) {
-            // No modo simplificado, procura por itens marcados para sumir neste modo
-            if (activeTab.querySelector('.form-group.simplificado-hide')) hasHiddenItems = true;
-        } else {
-            // No modo completo, procura por itens marcados para sumir no completo (ex: item 1.4)
-            if (activeTab.querySelector('.form-group.completo-hide')) hasHiddenItems = true;
-        }
-
-        if (hasHiddenItems) {
-            const modeName = isSimplificado ? "ETP Simplificado" : "ETP Completo";
-            banner.style.display = 'block';
-            banner.innerHTML = `<i class="fas fa-info-circle"></i> <strong>Modo ${modeName}:</strong> Um ou mais itens desta seção foram ocultados automaticamente, pois não são exigidos neste tipo de ETP.`;
         }
     }
 
@@ -1245,12 +1215,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function debounce(func, delay) {
         let timeout;
         return function (...args) {
+            if (isAppInitializing) return;
             clearTimeout(timeout);
             timeout = setTimeout(() => func.apply(this, args), delay);
         };
     }
 
     function loadAllData() {
+        isAppInitializing = true; // Bloqueia o salvamento automático durante a inicialização
+
         const etpDataString = localStorage.getItem(ETP_DATA_KEY);
 
         solucaoManager.reset();
@@ -1278,6 +1251,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             updateAllSummariesAndDropDowns();
             updateAllProgressBars();
+            
+            isAppInitializing = false; // Libera o salvamento automático antes do return
             return;
         }
 
@@ -1309,6 +1284,8 @@ document.addEventListener('DOMContentLoaded', () => {
         handleModalidadeChange();
         updateChapterAccess();
         updateAllProgressBars();
+
+        isAppInitializing = false; // Libera o salvamento automático no final
     }
 
     function resetETPToIdentificacao() {
@@ -2459,7 +2436,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'close-video-modal': closeVideoTutorialModal(); break;
                 case 'add-anexo': anexoManager.add(); break;
                 case 'remove-anexo': anexoManager.remove(actionTarget.closest('.anexo-item')); break;
-                case 'export-etp': exportETP(actionTarget.dataset.format); break;
                 case 'copy-to-sei': copyETPtoClipboardSEI(); break;
                 case 'export-etp': exportETP(actionTarget.dataset.format); break;
                 case 'next-chapter': navigateToChapter('next'); break;
