@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Inteligente de ETP</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <!-- Biblioteca docx -->
+    <script src="https://unpkg.com/docx@7.3.0/build/index.js"></script>
+    <!-- Biblioteca FileSaver.js (necessária para salvar o .docx gerado pela biblioteca docx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1><!--<i class="fas fa-robot app-icon" aria-hidden="true"></i>-->Gerador Inteligente de ETP <i
+                class="fas fa-info-circle about-icon" id="btnAbrirSobre" title="Sobre este Aplicativo"></i></h1>
+        <!-- Container para versão, data e botão "Sobre" -->
+        <div class="app-version-container">
+            <!--<span class="app-version">Versão 110</span>-->
+            <!--<span class="update-date">| Atualizado em: 21/01/2026</span>-->
+            <!--<i class="fas fa-info-circle about-icon" id="btnAbrirSobre" title="Sobre este Aplicativo"></i>-->
+        </div>
+    </header>
+
+    <div class="etp-toolbar">
+        <div class="toolbar-group">
+            <button class="etp-tool-button" id="btnNovoETP" title="Criar um novo ETP em branco"><i
+                    class="fas fa-file-alt" aria-hidden="true"></i> Novo</button>
+            <button class="etp-tool-button" id="btnAbrirETP" title="Abrir um arquivo .etp.json salvo anteriormente"><i
+                    class="fas fa-folder-open" aria-hidden="true"></i> Abrir</button>
+            <button class="etp-tool-button" id="btnSalvarETPComputador"
+                title="Salvar seu progresso em um arquivo .etp.json"><i class="fas fa-save" aria-hidden="true"></i>
+                Salvar Rascunho</button>
+            <input type="file" id="etpFileInput" accept=".json,.etp.json" style="display: none;">
+        </div>
+        <div class="toolbar-separator"></div>
+        <div class="toolbar-group">
+            <!--<button class="etp-tool-button btn-tool-help" id="btnAbrirConfigIA"
+                title="Habilitar e configurar o assistente de Inteligência Artificial"><i class="fas fa-robot"
+                    aria-hidden="true"></i> Habilitação de IA</button>-->
+            <button class="etp-tool-button btn-tool-help" id="btnAbrirTutorial"
+                title="Assistir ao tutorial em vídeo e acessar o Guia Rápido"><i class="fas fa-video"
+                    aria-hidden="true"></i> Tutorial</button>
+            <button class="etp-tool-button btn-tool-help" id="btnAbrirManualEtp"
+                title="Consultar o Manual de ETP completo em uma nova aba"><i class="fas fa-book-open"
+                    aria-hidden="true"></i> Manual</button>
+        </div>
+        <div class="toolbar-separator"></div>
+        <div class="toolbar-group">
+            <button class="etp-tool-button btn-export-primary" data-action="export-etp" data-format="docx-text"><i class="fas fa-file-word" aria-hidden="true"></i> Gerar Documento Word</button>
+            <button class="etp-tool-button btn-export-primary" data-action="copy-to-sei"><i class="fas fa-clipboard" aria-hidden="true"></i> Copiar Documento para o SEI</button>
+        </div>
+    </div>
+
+    <!--<div id="beta-alert-banner">
+        <div class="beta-alert-content">
+            <p>
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Fonte de referência:</strong> O <a class="alert_link" href="manual_etp.html" target="_blank">Manual de Elaboração de ETP</a>, desenvolvido pela Secretaria de Administração do TSE, embasa o auxílio ao usuário neste aplicativo.
+            </p>
+        </div>
+        <span id="close-beta-alert" title="Fechar aviso">&times;</span>
+    </div>-->
+
+    <div class="tab-container">
+        <div class="tab-nav">
+            <button class="tab-button" data-tab-target="inicio"><i class="fas fa-home" aria-hidden="true"></i> Início</button>
+            <button class="tab-button" data-tab-target="identificacao"><i class="fas fa-id-badge"
+                    aria-hidden="true"></i> 0. Identificação</button>
+            <button class="tab-button" data-tab-target="cap1"><i class="fas fa-bullseye" aria-hidden="true"></i> 1.
+                Necessidade</button>
+            <button class="tab-button simplificado-hide" data-tab-target="cap2"><i class="fas fa-search-dollar"
+                    aria-hidden="true"></i> 2. Soluções de Mercado</button>
+            <button class="tab-button" data-tab-target="cap3"><i class="fas fa-check-circle" aria-hidden="true"></i> 3.
+                Solução Escolhida</button>
+            <button class="tab-button" data-tab-target="cap4"><i class="fas fa-coins" aria-hidden="true"></i> 4. Valor
+                Estimado</button>
+            <button class="tab-button simplificado-hide" data-tab-target="cap5"><i class="fas fa-history"
+                    aria-hidden="true"></i> 5. Contratações Anteriores</button>
+            <button class="tab-button" data-tab-target="cap6"><i class="fas fa-shield-alt" aria-hidden="true"></i> 6.
+                Análise dos Riscos</button>
+            <button class="tab-button" data-tab-target="cap7"><i class="fas fa-th-large" aria-hidden="true"></i> 7.
+                Parcelamento</button>
+            <button class="tab-button" data-tab-target="cap8"><i class="fas fa-gavel" aria-hidden="true"></i> 8.
+                Aspectos Administrativos</button>
+            <button class="tab-button inactive" id="nav_cap9" data-tab-target="cap9"><i class="fas fa-file-signature"
+                    aria-hidden="true"></i> 9. Registro de Preços</button>
+            <button class="tab-button" data-tab-target="anexos"><i class="fas fa-paperclip" aria-hidden="true"></i>
+                Anexos</button>
+            <button class="tab-button" data-tab-target="consolidacao"><i class="fas fa-layer-group"
+                    aria-hidden="true"></i> ETP Consolidado</button>
+        </div>
+
+        <!-- Container principal para o conteúdo da aba -->
+        <div class="main-content-wrapper">
+            <!-- Barra de Progresso Principal -->
+            <div class="progress-bar-container" id="mainProgressWrapper">
+                <div class="main-progress-track">
+                    <div class="progress-bar" id="etpProgressBar">
+                        <span id="etpProgressText">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso da Aba -->
+            <div class="tab-progress-container" id="tabProgressWrapper">
+                <div class="tab-progress-track">
+                    <div class="progress-bar" id="tabProgressBar">
+                        <span id="tabProgressText">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOVO: Conteúdo da Aba Início -->
+            <div id="inicio" class="tab-content">
+                <div class="home-tab-content">
+                    <div class="home-icon"><i class="fas fa-robot"></i></div>
+                    <h2 class="home-title">Bem-vindo ao Gerador Inteligente de ETP</h2>
+                    <p class="home-subtitle">Sua ferramenta para criar Estudos Técnicos Preliminares de forma guiada, segura e alinhada à Lei 14.133/2021.</p>
+                    
+                    <!-- BOTOES DA ABA INÍCIO -->
+                    <div class="home-buttons-container">
+                        <button class="home-main-button btn-start" data-action="start-new-etp-home">
+                            <i class="fas fa-file-medical"></i>
+                            <span>Começar Novo ETP</span>
+                        </button>
+                        
+                        <button class="home-main-button btn-continue" id="btnContinueEtpHome" data-action="continue-etp-home">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Continuar ETP Salvo</span>
+                        </button>
+                    </div>
+
+                    <!--<div class="home-secondary-actions">
+                        <button class="etp-tool-button btn-tool-help" id="btnAbrirTutorial_home"><i class="fas fa-video" aria-hidden="true"></i> Assistir ao Tutorial</button>
+                        <button class="etp-tool-button btn-tool-help" id="btnAbrirManualEtp_home"><i class="fas fa-book-open" aria-hidden="true"></i> Consultar o Manual</button>
+                        <button class="etp-tool-button btn-tool-help" id="btnAbrirSobre_home"><i class="fas fa-info-circle" aria-hidden="true"></i> Sobre a Ferramenta</button>
+                    </div>-->
+                </div>
+            </div>
+            
+            <!-- Conteúdo das Abas -->
+            <div id="identificacao" class="tab-content">
+                <h2><i class="fas fa-id-badge chapter-icon" aria-hidden="true"></i>Identificação do Estudo Técnico
+                    Preliminar</h2>
+                <p class="warning-text">Comece por aqui! Preencha os dados de identificação a seg e selecione o <strong>Tipo de ETP</strong> abaixo para liberar o preenchimento dos demais capítulos.</p>
+
+                <div class="form-group">
+                    <label for="etp_unidade_demandante">I.1 Unidade Demandante</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="etp_unidade_demandante"
+                            placeholder="Ex: Secretaria de Tecnologia da Informação - STI">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="etp_unidade_demandante"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="etp_titulo">I.2 Título Identificador do ETP</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="etp_titulo"
+                            placeholder="Digite o título ou gere com a IA (se habilitada)">
+                        <button class="ai-help-button" data-action="get-ai-help" data-target-field="etp_titulo"><i
+                                class="fas fa-book-open" aria-hidden="true"></i></button>
+                        <button class="ai-help-button" data-action="generate-title-ai"><i
+                                class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></button>
+                    </div>
+                    <small id="etp_titulo_ai_helper_text"><i>Quando a IA está ativa, você pode clicar na varinha mágica
+                            (<i class="fas fa-wand-magic-sparkles"></i>) para receber uma sugestão de título, que poderá
+                            ser editada.</i></small>
+                </div>
+                <div class="form-group">
+                    <label for="etp_numero_processo_sei">I.3 Número do Processo SEI</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="etp_numero_processo_sei" placeholder="0000.00.000000000-0"
+                            maxlength="20">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="etp_numero_processo_sei"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="etp_tipo">I.4 Tipo de ETP</label>
+                    <div class="input-with-ai">
+                        <select id="etp_tipo" name="etp_tipo" data-action="toggle-conditional"
+                            data-toggle-group="etp_tipo">
+                            <option value="">Selecione...</option>
+                            <option value="completo">Completo (padrão)</option>
+                            <option value="simplificado">Simplificado (exige autorização formal)</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help" data-target-field="etp_tipo"><i
+                                class="fas fa-book-open" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div id="conditional_etp_simplificado_auth" class="form-group conditional-field" style="display: none;">
+                    <div class="form-group">
+                        <label for="etp_auth">I.4.1 Já existe autorização formal da Secretaria de Administração ou da
+                            Diretoria-Geral para que este ETP seja simplificado?</label>
+                        <div class="input-with-ai">
+                            <select id="etp_auth" name="etp_auth" data-action="toggle-conditional"
+                                data-toggle-group="etp_auth">
+                                <option value="">Selecione...</option>
+                                <option value="sim">Sim</option>
+                                <option value="nao">Não</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help" data-target-field="etp_auth"><i
+                                    class="fas fa-book-open" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+
+                    <div id="conditional_etp_auth_sei" class="form-group conditional-field" style="display: none;">
+                        <label for="etp_auth_sei_number">I.4.1.1 Número SEI do documento de autorização para ETP
+                            Simplificado</label>
+                        <div class="input-with-ai">
+                            <input type="text" id="etp_auth_sei_number" placeholder="Informe o número do documento SEI"
+                                maxlength="7" pattern="\d{7}" oninput="this.value = this.value.replace(/\D/g, '')">
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="etp_auth_sei_number"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Aba Identificação) -->
+                <div class="bottom-nav-bar" style="justify-content: flex-end;">
+                    <button class="btn-nav-chapter" id="btnNext_identificacao" data-action="next-chapter"
+                        disabled>Próximo Capítulo <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap1" class="tab-content">
+                <h2><i class="fas fa-bullseye chapter-icon" aria-hidden="true"></i>Capítulo 1: Necessidade ou Problema a
+                    ser Resolvido</h2>
+                <p class="warning-text">Neste capítulo, a necessidade não deve ser confundida com a solução pretendida.
+                    O foco deve ser na "dor" da Administração, e não na "receita" (a solução).</p>
+                <div class="form-group">
+                    <label for="c1_1_indicacao_necessidade">1.1 Indicação da necessidade</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_1_indicacao_necessidade" rows="4"
+                            placeholder="Registre de forma clara e objetiva qual é a necessidade..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_1_indicacao_necessidade"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                    <!--<small><i>Ressalta-se que a necessidade não deve ser confundida com a solução pretendida...</i></small>-->
+                </div>
+                <div class="form-group">
+                    <label for="c1_2_situacoes_problemas">1.2 Situações, problemas, dificuldades enfrentadas</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_2_situacoes_problemas" rows="4"
+                            placeholder="Detalhar os problemas, as dificuldades..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_2_situacoes_problemas"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c1_3_contexto_externo">1.3 Análise do contexto externo</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_3_contexto_externo" rows="4"
+                            placeholder="Avaliar e discorrer sobre o contexto externo..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_3_contexto_externo"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group completo-hide">
+                    <label for="c1_4_processos_anteriores">1.4 Nº SEI dos processos anteriores no TSE para atendimento
+                        da necessidade</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_4_processos_anteriores" rows="4"
+                            placeholder="Caso a necessidade já tenha sido atendida..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_4_processos_anteriores"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c1_5_publico_alvo">1.5 Público alvo a ser atendido</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_5_publico_alvo" rows="3"
+                            placeholder="Indicar o público que será beneficiado..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_5_publico_alvo"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c1_6_impactos_necessidade_nao_sanada">1.6 Impactos sobre as atividades do TSE ou sobre o
+                        público alvo caso a necessidade não seja sanada</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_6_impactos_necessidade_nao_sanada" rows="3"
+                            placeholder="Informar com clareza as consequências..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_6_impactos_necessidade_nao_sanada"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c1_7_alinhamento_estrategico_sim_nao">1.7 A necessidade está alinhada com o Planejamento
+                        Estratégico ou o Plano Diretor de TIC?</label>
+                    <div class="input-with-ai">
+                        <select id="c1_7_alinhamento_estrategico_sim_nao" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="alinhamento_estrategico">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_7_alinhamento_estrategico_sim_nao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c1_7_sim_alinhamento" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c1_7_1_indicacao_objetivos">1.7.1 Indicação do(s) objetivo(s)</label>
+                    <div class="input-with-ai">
+                        <textarea id="c1_7_1_indicacao_objetivos" rows="3"
+                            placeholder="Apontar o objetivo(s) estratégico(s) do TSE..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c1_7_1_indicacao_objetivos"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap2" class="tab-content simplificado-hide">
+                <h2><i class="fas fa-search-dollar chapter-icon" aria-hidden="true"></i>Capítulo 2: Levantamento e
+                    Análise de Soluções de Mercado</h2>
+                <p class="warning-text">Neste capítulo, deve-se registrar as alternativas de soluções encontradas na
+                    pesquisa de mercado, as quais possam atender à necessidade levantada.</p>
+                <div id="solucoes_mercado_container">
+                    <!-- Soluções dinâmicas serão adicionadas aqui via JavaScript -->
+                </div>
+                <button class="add-button" data-action="add-solucao"><i class="fas fa-plus-circle"
+                        aria-hidden="true"></i> Adicionar Outra Solução</button>
+                <hr>
+                <div class="form-group">
+                    <label for="c2_X_resumo_comparativo_table_container">2.X Resumo comparativo das soluções</label>
+                    <div id="c2_X_resumo_comparativo_table_container" class="summary-table-container">
+                        <!-- A tabela de resumo será injetada aqui pelo JavaScript -->
+                    </div>
+                    <small><i>Este resumo é gerado automaticamente e não pode ser editado diretamente aqui.</i></small>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap3" class="tab-content">
+                <h2><i class="fas fa-check-circle chapter-icon" aria-hidden="true"></i>Capítulo 3: Detalhamento da
+                    Solução Escolhida</h2>
+                <p class="warning-text">Após a análise comparativa das alternativas de mercado, este capítulo formaliza
+                    qual foi a solução considerada a mais vantajosa para atender à necessidade da Administração.</p>
+                <div class="form-group">
+                    <div id="c3_1_completo_wrapper">
+                        <label for="c3_1_solucao_escolhida">3.1 Solução escolhida</label>
+                        <div class="input-with-ai">
+                            <select id="c3_1_solucao_escolhida">
+                                <option value="">Selecione uma solução do Cap. 2...</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c3_1_solucao_escolhida"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                        <small><i>Selecione a solução que foi analisada e escolhida no Capítulo 2. Se nenhuma solução
+                                aparecer, preencha o Capítulo 2 primeiro.</i></small>
+                    </div>
+                    <div id="c3_1_simplificado_wrapper">
+                        <label for="c3_1_solucao_escolhida_simplificada">3.1 Solução escolhida</label>
+                        <div class="input-with-ai">
+                            <input type="text" id="c3_1_solucao_escolhida_simplificada"
+                                placeholder="Descreva diretamente a solução escolhida.">
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c3_1_solucao_escolhida_simplificada"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                        <small><i>Como este é um ETP Simplificado, descreva a solução diretamente.</i></small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c3_2_categoria_solucao">3.2 Categoria da Solução</label>
+                    <div class="input-with-ai">
+                        <select id="c3_2_categoria_solucao">
+                            <option value="">Selecione a categoria...</option>
+                            <option value="Aquisicao">Aquisição</option>
+                            <option value="PrestacaoServico">Prestação de Serviço</option>
+                            <option value="Terceirizacao">Terceirização</option>
+                            <option value="SolucaoTIC">Solução de TIC (aquisição ou serviço)</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_2_categoria_solucao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c3_3_motivos_justificativas">3.3 Motivos ou justificativas técnicas e econômicas para a
+                        escolha</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_3_motivos_justificativas" rows="4"
+                            placeholder="Indicar os motivos que determinaram a escolha..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_3_motivos_justificativas"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c3_4_caracteristicas_basicas">3.4 Características básicas do serviço ou do
+                        material</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_4_caracteristicas_basicas" rows="3"
+                            placeholder="Indicar as características básicas..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_4_caracteristicas_basicas"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c3_5_quantidades_unidades">3.5 Quantidades e respectivas unidades de medida</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_5_quantidades_unidades" rows="3"
+                            placeholder="Indicar as quantidades e unidades..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_5_quantidades_unidades"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="c3_6_justificativa_quantidades">3.6 Justificativa das Quantidades</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_6_justificativa_quantidades" rows="3"
+                            placeholder="Justificar as quantidades definidas..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_6_justificativa_quantidades"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c3_7_natureza_continua">3.7 A contratação é de natureza contínua?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_7_natureza_continua" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="natureza_continua">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_7_natureza_continua"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_7_natureza_continua" class="form-group conditional-field"
+                    style="display: none;">
+                    <div class="form-group">
+                        <label for="c3_7_1_justificativa_natureza_continua">3.7.1 Justificativa da natureza
+                            continuada</label>
+                        <div class="input-with-ai">
+                            <textarea id="c3_7_1_justificativa_natureza_continua" rows="3"
+                                placeholder="Justificar por que a necessidade do serviço é permanente e contínua para o TSE..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c3_7_1_justificativa_natureza_continua"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c3_8_vigencia_meses">3.8 Vigência inicial pretendida em meses (máximo de 60)</label>
+                    <div class="input-with-ai">
+                        <input type="number" id="c3_8_vigencia_meses" placeholder="Ex: 12" min="1" max="60"
+                            data-action="toggle-vigencia-benefits">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_8_vigencia_meses"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_8_1_beneficios_vigencia" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c3_8_1_beneficios_vigencia_superior">3.8.1 Indicação dos benefícios técnicos e
+                        econômicos advindos da vigência superior a 12 meses</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_8_1_beneficios_vigencia_superior" rows="3"
+                            placeholder="Justificar os benefícios (ganho de escala, melhor gerenciamento, etc.) para uma vigência superior a 12 meses."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_8_1_beneficios_vigencia_superior"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_9_tem_garantia">3.9 Há previsão de garantia técnica?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_9_tem_garantia" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="garantia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_9_tem_garantia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_9_1_prazo_garantia" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_9_1_prazo_garantia">3.9.1 Qual é o prazo desejado da garantia?</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="c3_9_1_prazo_garantia" placeholder="Ex: 12 meses, 24 meses...">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_9_1_prazo_garantia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_9_2_garantia_mercado" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_9_2_garantia_mercado">3.9.2 A garantia exigida está de acordo com o padrão praticado
+                        pelo mercado?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_9_2_garantia_mercado" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="justificativa_garantia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_9_2_garantia_mercado"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_9_2_1_justificativa_garantia"
+                    class="form-group conditional-field simplificado-hide" style="display: none;">
+                    <label for="c3_9_2_1_justificativa_garantia">3.9.2.1 Justificativa da exigência do prazo desejado de
+                        garantia fora do padrão de mercado</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_9_2_1_justificativa_garantia" rows="3"
+                            placeholder="Justificar se o prazo não estiver de acordo com o mercado..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_9_2_1_justificativa_garantia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_10_tem_assistencia">3.10 Há previsão de assistência técnica?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_10_tem_assistencia" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="assistencia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_10_tem_assistencia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_10_1_prazo_assistencia" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_10_1_prazo_assistencia">3.10.1 Qual é o prazo desejado da assistência
+                        técnica?</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="c3_10_1_prazo_assistencia"
+                            placeholder="Ex: Durante a vigência contratual...">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_10_1_prazo_assistencia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_10_2_assistencia_mercado" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_10_2_assistencia_mercado">3.10.2 A assistência técnica exigida está de acordo com o
+                        padrão praticado pelo mercado?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_10_2_assistencia_mercado" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="justificativa_assistencia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_10_2_assistencia_mercado"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_10_2_1_justificativa_assistencia"
+                    class="form-group conditional-field simplificado-hide" style="display: none;">
+                    <label for="c3_10_2_1_justificativa_assistencia">3.10.2.1 Justificativa da exigência do prazo
+                        desejado de assistência fora do padrão de mercado</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_10_2_1_justificativa_assistencia" rows="3"
+                            placeholder="Justificar se a assistência não estiver de acordo com o mercado..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_10_2_1_justificativa_assistencia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_11_tem_transferencia_conhecimento">3.11 Será necessária a transferência de
+                        tecnologias ou de técnicas pela contratada ao término do contrato?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_11_tem_transferencia_conhecimento" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="transferencia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_11_tem_transferencia_conhecimento"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_11_transferencia" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_11_1_procedimentos_transferencia">3.11.1 Procedimentos a serem adotados para garantir
+                        transferência</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_11_1_procedimentos_transferencia" rows="3"
+                            placeholder="Indicar os procedimentos para garantir a transferência de conhecimentos..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_11_1_procedimentos_transferencia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_12_tem_capacitacao_servidores">3.12 Há necessidade de capacitação de servidores para
+                        uso da solução escolhida?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_12_tem_capacitacao_servidores" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="capacitacao">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_12_tem_capacitacao_servidores"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_12_capacitacao" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <div class="form-group">
+                        <label for="c3_12_1_responsavel_capacitacao">3.12.1 Responsável pela capacitação</label>
+                        <div class="input-with-ai">
+                            <select id="c3_12_1_responsavel_capacitacao" class="full-width-input">
+                                <option value="">Selecione...</option>
+                                <option value="TSE">TSE</option>
+                                <option value="Contratada">Contratada</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c3_12_1_responsavel_capacitacao"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_13_tem_contratacao_adicional">3.13 A solução escolhida levará à necessidade de
+                        contratação adicional de serviços ou materiais não contemplados?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_13_tem_contratacao_adicional" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="contratacao_adicional">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_13_tem_contratacao_adicional"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_13_contratacao_adicional" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_13_1_descricao_servicos_materiais">3.13.1 Descrição dos serviços ou materiais não
+                        contemplados</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_13_1_descricao_servicos_materiais" rows="3"
+                            placeholder="Indicar serviços ou materiais que devem ser providenciados no futuro..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_13_1_descricao_servicos_materiais"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_14_tem_ajuste_contratacoes">3.14 A solução escolhida levará à necessidade de ajuste
+                        em outras contratações já existentes?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_14_tem_ajuste_contratacoes" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="ajuste_contratacoes">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_14_tem_ajuste_contratacoes"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_14_ajuste_contratacoes" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_14_1_indicacao_contratos_ajuste">3.14.1 Indicação dos contratos a serem
+                        ajustados</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_14_1_indicacao_contratos_ajuste" rows="3"
+                            placeholder="Indicar quais contratos vigentes precisarão ser ajustados e por quê..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_14_1_indicacao_contratos_ajuste"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c3_15_impacto_acessibilidade">3.15 A solução escolhida provocará impacto em relação a
+                        aspectos de acessibilidade para pessoas com deficiência ou mobilidade reduzida?</label>
+                    <div class="input-with-ai">
+                        <select id="c3_15_impacto_acessibilidade" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="acessibilidade">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_15_impacto_acessibilidade"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c3_15_acessibilidade" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c3_15_1_acoes_acessibilidade">3.15.1 Indicação das ações previstas para garantia de
+                        acessibilidade</label>
+                    <div class="input-with-ai">
+                        <textarea id="c3_15_1_acoes_acessibilidade" rows="3"
+                            placeholder="Indique as ações, como conformidade com WCAG, acessibilidade física, etc."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c3_15_1_acoes_acessibilidade"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap4" class="tab-content">
+                <h2><i class="fas fa-coins chapter-icon" aria-hidden="true"></i>Capítulo 4: Detalhamento do Valor
+                    Estimado da Contratação</h2>
+                <p class="warning-text">Neste capítulo, devem ser feitas as descrições da pesquisa de preços realizada e
+                    do modo como se chegou a um valor estimado da contratação.</p>
+                <div class="form-group">
+                    <label for="c4_1_metodologia_estimativa">4.1 Pesquisa de Preços</label>
+                    <div class="input-with-ai">
+                        <textarea id="c4_1_metodologia_estimativa" rows="4"
+                            placeholder="Apresente uma lista com as fontes referenciais e os valores encontrados na pesquisa de preços (ex: Proposta do Fornecedor A, 12/07/2025: Licença de Software X - R$ 115,00/mês."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c4_1_metodologia_estimativa"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                    <!--<small><i>Apresente uma lista com as fontes referenciais e os valores encontrados na pesquisa de preços.</i></small>-->
+                </div>
+                <div class="form-group">
+                    <label for="c4_2_detalhamento_cesta_precos">4.2 Metodologia para a Estimativa</label>
+                    <div class="input-with-ai">
+                        <textarea id="c4_2_detalhamento_cesta_precos" rows="6"
+                            placeholder="Descreva o cálculo utilizado para estimar o valor da solução (ex: média, mediana, menor valor)."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c4_2_detalhamento_cesta_precos"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                    <!--<small><i>Descreva o cálculo utilizado para estimar o valor da solução (ex: média, mediana, menor valor).</i></small>-->
+                </div>
+                <div class="form-group">
+                    <label for="c4_3_valor_total_estimado">4.3 Valor Total Estimado da Contratação (R$)</label>
+                    <div class="input-with-ai">
+                        <input type="text" id="c4_3_valor_total_estimado" placeholder="Ex: 150.000,00" maxlength="20">
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c4_3_valor_total_estimado"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                    <small><i>Informe o valor numérico final estimado para a contratação.</i></small>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap5" class="tab-content simplificado-hide">
+                <h2><i class="fas fa-history chapter-icon" aria-hidden="true"></i>Capítulo 5: Análise de Contratações
+                    Anteriores</h2>
+                <p class="warning-text">Neste capítulo, é feita uma análise crítica de contratações anteriores
+                    relacionadas à necessidade atual levantada.</p>
+                <div class="form-group label-with-help">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="c5_nao_se_aplica" data-action="toggle-cap5">
+                        <label for="c5_nao_se_aplica"
+                            style="font-weight: normal; display: inline; margin-bottom: 0;">Não se aplica / Primeira
+                            Contratação</label>
+                    </div>
+                    <button class="ai-help-button" data-action="get-ai-help" data-target-field="c5_nao_se_aplica"><i
+                            class="fas fa-book-open" aria-hidden="true"></i></button>
+                </div>
+
+                <div id="cap5_fields_container">
+                    <div id="contratacoes_anteriores_container">
+                        <!-- Contratações anteriores dinâmicas -->
+                    </div>
+                    <button class="add-button" data-action="add-contratacao"><i class="fas fa-plus-circle"
+                            aria-hidden="true"></i> Adicionar Outra Contratação Anterior</button>
+                    <hr>
+
+                    <div class="form-group">
+                        <label for="c5_X_diferencas_contratacao_atual">5.X Diferenças entre a solução pretendida e a(s)
+                            contratação(ões) anterior(es)</label>
+                        <div class="input-with-ai">
+                            <textarea id="c5_X_diferencas_contratacao_atual" rows="3"
+                                placeholder="Indicar e justificar diferenças na especificação, quantidades ou modelo de execução em relação às contratações anteriores listadas."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c5_X_diferencas_contratacao_atual"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c5_Y_necessidade_transicao_inicio">5.Y Será necessária transição do serviço no
+                            início do contrato?</label>
+                        <div class="input-with-ai">
+                            <select id="c5_Y_necessidade_transicao_inicio" class="full-width-input">
+                                <option value="">Selecione...</option>
+                                <option value="sim">Sim, será necessária transição da atual contratada para a nova.
+                                </option>
+                                <option value="nao">Não, não há necessidade de transição.</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c5_Y_necessidade_transicao_inicio"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="form-group">
+                        <label for="c5_Z_resumo_contratacoes_table_container">5.Z Resumo das Contratações
+                            Anteriores</label>
+                        <div id="c5_Z_resumo_contratacoes_table_container" class="summary-table-container">
+                            <!-- A tabela de resumo será injetada aqui -->
+                        </div>
+                        <small><i>Este resumo é gerado automaticamente e não pode ser editado diretamente
+                                aqui.</i></small>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap6" class="tab-content">
+                <h2><i class="fas fa-shield-alt chapter-icon" aria-hidden="true"></i>Capítulo 6: Análise dos Riscos</h2>
+                <p class="warning-text">Neste capítulo, é levantado aquilo que pode dar errado nas fases de
+                    planejamento, seleção do fornecedor e execução do contrato, com o objetivo de prevenção e
+                    contingência.</p>
+                <div id="riscos_container">
+                    <!-- Riscos dinâmicos -->
+                </div>
+                <button class="add-button" data-action="add-risco"><i class="fas fa-plus-circle" aria-hidden="true"></i>
+                    Adicionar Outro Risco</button>
+                <hr>
+                <div class="form-group">
+                    <label for="c6_X_resumo_riscos_table_container">6.X Resumo dos Riscos</label>
+                    <div id="c6_X_resumo_riscos_table_container" class="summary-table-container">
+                        <!-- Tabela de resumo de riscos -->
+                    </div>
+                    <small><i>Este resumo é gerado automaticamente e não pode ser editado diretamente aqui.</i></small>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap7" class="tab-content">
+                <h2><i class="fas fa-th-large chapter-icon" aria-hidden="true"></i>Capítulo 7: Parcelamento da Solução
+                </h2>
+                <p class="warning-text">Neste capítulo, define-se a forma de parcelamento do objeto da contratação, com
+                    o objetivo de ampliar a competitividade e possibilitar a participação de mais licitantes, desde que
+                    haja viabilidade técnica e vantagem econômica.</p>
+                <div class="form-group">
+                    <label for="c7_1_forma_parcelamento">7.1 Como será feito o parcelamento desta contratação?</label>
+                    <div class="input-with-ai">
+                        <select id="c7_1_forma_parcelamento" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="parcelamento">
+                            <option value="">Selecione a forma de parcelamento...</option>
+                            <option value="grupo_unico">Grupo Único</option>
+                            <option value="grupos_separados">Grupos Separados</option>
+                            <option value="itens">Itens Separados</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c7_1_forma_parcelamento"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div id="conditional_c7_grupo_unico" class="form-group conditional-field" style="display: none;">
+                    <div class="form-group">
+                        <label for="c7_1_1_justificativa_grupo_unico">7.1.1 Justificativa do agrupamento único</label>
+                        <div class="input-with-ai">
+                            <textarea id="c7_1_1_justificativa_grupo_unico" rows="4"
+                                placeholder="Justifique por que a adjudicação será por preço global do grupo. Aponte a inviabilidade técnica/econômica da adjudicação por item, conforme Art. 40, § 3º da Lei 14.133/2021."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c7_1_1_justificativa_grupo_unico"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="conditional_c7_grupos_separados" class="conditional-field" style="display: none;">
+                    <div class="form-group">
+                        <label for="c7_1_2_descricao_grupos_separados">7.1.2 Descrição de como será a divisão dos itens
+                            em grupos separados</label>
+                        <div class="input-with-ai">
+                            <textarea id="c7_1_2_descricao_grupos_separados" rows="4"
+                                placeholder="Descreva os diferentes grupos (lotes) e os itens que compõem cada um deles. Ex: Grupo 1 - Hardware; Grupo 2 - Serviços."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c7_1_2_descricao_grupos_separados"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c7_1_3_justificativa_grupos_separados">7.1.3 Justificativa do parcelamento em grupos
+                            separados</label>
+                        <div class="input-with-ai">
+                            <textarea id="c7_1_3_justificativa_grupos_separados" rows="4"
+                                placeholder="Justifique por que a divisão em grupos é técnica e economicamente vantajosa, permitindo a participação de empresas com diferentes especialidades e ampliando a competitividade."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c7_1_3_justificativa_grupos_separados"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap8" class="tab-content">
+                <h2><i class="fas fa-gavel chapter-icon" aria-hidden="true"></i>Capítulo 8: Aspectos Administrativos
+                </h2>
+                <p class="warning-text">Neste capítulo, são definidos aspectos administrativos importantes tanto para a
+                    Administração quanto para os licitantes.</p>
+                <div class="form-group">
+                    <label for="c8_1_modalidade_contratacao">8.1 Modalidade da contratação</label>
+                    <div class="input-with-ai">
+                        <select id="c8_1_modalidade_contratacao" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="modalidade_contratacao">
+                            <option value="">Selecione...</option>
+                            <option value="licitacao">Licitação (procedimento regra)</option>
+                            <option value="dispensa">Contratação direta por dispensa de licitação</option>
+                            <option value="inexigibilidade">Contratação direta por inexigibilidade de licitação</option>
+                            <option value="leilao">Leilão</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_1_modalidade_contratacao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div id="conditional_c8_1_dispensa" class="form-group conditional-field" style="display: none;">
+                    <div class="form-group">
+                        <label for="c8_1_1_hipotese_dispensa">8.1.1 Hipótese de dispensa</label>
+                        <div class="input-with-ai">
+                            <select id="c8_1_1_hipotese_dispensa" class="full-width-input"
+                                data-action="toggle-conditional" data-toggle-group="dispensa_outra_hipotese">
+                                <option value="">Selecione a hipótese...</option>
+                                <option value="art75_I">Art. 75, I - Valor (obras/serviços de engenharia ou manutenção
+                                    de veículos)</option>
+                                <option value="art75_II">Art. 75, II - Valor (outros serviços e compras)</option>
+                                <option value="art75_VIII">Art. 75, VIII - Emergencial ou calamidade pública</option>
+                                <option value="outra">Outra hipótese</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_1_1_hipotese_dispensa"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div id="conditional_c8_1_1_outra_hipotese" class="form-group conditional-field"
+                        style="display: none;">
+                        <label for="c8_1_1_1_especifique_hipotese">8.1.1.1 Especificação da hipótese de dispensa</label>
+                        <div class="input-with-ai">
+                            <textarea id="c8_1_1_1_especifique_hipotese" rows="2"
+                                placeholder="Especifique a hipótese legal de dispensa..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_1_1_1_especifique_hipotese"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="conditional_c8_1_inexigibilidade" class="form-group conditional-field" style="display: none;">
+                    <div class="form-group">
+                        <label for="c8_1_1_hipotese_inexigibilidade">8.1.1 Hipótese de Inexigibilidade</label>
+                        <div class="input-with-ai">
+                            <select id="c8_1_1_hipotese_inexigibilidade" class="full-width-input">
+                                <option value="">Selecione a hipótese...</option>
+                                <option value="art74_I">Art. 74, I - Fornecedor exclusivo</option>
+                                <option value="art74_II">Art. 74, II - Contratação de profissional de notória
+                                    especialização</option>
+                                <option value="art74_III">Art. 74, III - Serviços técnicos especializados (natureza
+                                    predominantemente intelectual)</option>
+                                <option value="art74_IV">Art. 74, IV - Credenciamento</option>
+                                <option value="art74_V">Art. 74, V - Aquisição ou locação de imóvel com características
+                                    específicas</option>
+                            </select>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_1_1_hipotese_inexigibilidade"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c8_1_2_justificativa_inexigibilidade">8.1.2 Justificativa da inviabilidade de
+                            competição</label>
+                        <div class="input-with-ai">
+                            <textarea id="c8_1_2_justificativa_inexigibilidade" rows="3"
+                                placeholder="Fundamente os motivos que tornam a competição inviável..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_1_2_justificativa_inexigibilidade"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_2_procedimentos_auxiliares">8.2 Procedimentos auxiliares (art. 78 da Lei nº
+                        14.133/2021)</label>
+                    <div class="input-with-ai">
+                        <select id="c8_2_procedimentos_auxiliares" class="full-width-input">
+                            <option value="">Selecione...</option>
+                            <option value="credenciamento">Credenciamento</option>
+                            <option value="pre_qualificacao">Pré-qualificação</option>
+                            <option value="pmi">Procedimento de Manifestação de Interesse (PMI)</option>
+                            <option value="srp">Sistema de Registro de Preços (SRP)</option>
+                            <option value="registro_cadastral">Registro Cadastral</option>
+                            <option value="nao_se_aplica">Não se aplica</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_2_procedimentos_auxiliares"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_3_criterio_julgamento">8.3 Critério de julgamento das propostas (art. 33 da Lei
+                        14.133/2021)</label>
+                    <div class="input-with-ai">
+                        <select id="c8_3_criterio_julgamento" class="full-width-input">
+                            <option value="">Selecione...</option>
+                            <option value="menor_preco">Menor preço</option>
+                            <option value="maior_desconto">Maior desconto</option>
+                            <option value="melhor_tecnica_ou_conteudo_artistico">Melhor técnica ou conteúdo artístico
+                            </option>
+                            <option value="tecnica_e_preco">Técnica e preço</option>
+                            <option value="maior_lance">Maior lance</option>
+                            <option value="maior_retorno_economico">Maior retorno econômico</option>
+                            <option value="nao_se_aplica">Não se aplica</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_3_criterio_julgamento"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_4_tem_qualificacao_tecnica">8.4 Há exigências de qualificação técnico-profissional
+                        das licitantes?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_4_tem_qualificacao_tecnica" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="qualificacao_tecnica">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_4_tem_qualificacao_tecnica"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_4_qualificacao_tecnica" class="form-group conditional-field"
+                    style="display: none;">
+                    <div class="form-group">
+                        <label for="c8_4_1_detalhamento_qualificacao">8.4.1 Detalhamento das exigências de
+                            qualificação</label>
+                        <div class="input-with-ai">
+                            <textarea id="c8_4_1_detalhamento_qualificacao" rows="3"
+                                placeholder="Detalhe os critérios que serão exigidos (ex: atestados de capacidade técnica, certificações específicas, etc.)..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_4_1_detalhamento_qualificacao"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c8_4_2_justificativa_qualificacao">8.4.2 Justificativa das exigências de
+                            qualificação</label>
+                        <div class="input-with-ai">
+                            <textarea id="c8_4_2_justificativa_qualificacao" rows="3"
+                                placeholder="Justifique por que as exigências detalhadas acima são indispensáveis para garantir a execução do objeto..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_4_2_justificativa_qualificacao"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_5_tem_amostras">8.5 Há necessidade de apresentação de amostras ou prova de conceito
+                        na fase de licitação?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_5_tem_amostras" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="amostras">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_5_tem_amostras"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_5_amostras" class="form-group conditional-field" style="display: none;">
+                    <label for="c8_5_1_justificativa_amostras">8.5.1 Justificativa da exigência de amostras ou prova de
+                        conceito</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_5_1_justificativa_amostras" rows="3"
+                            placeholder="Justificar necessidade e indicar critérios objetivos de avaliação..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_5_1_justificativa_amostras"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_6_tem_vistoria">8.6 Há necessidade de os licitantes fazerem vistoria prévia no local
+                        de execução dos serviços?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_6_tem_vistoria" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="vistoria">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_6_tem_vistoria"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_6_vistoria" class="form-group conditional-field" style="display: none;">
+                    <label for="c8_6_1_justificativa_vistoria">8.6.1 Justificativa da previsão de vistoria</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_6_1_justificativa_vistoria" rows="3"
+                            placeholder="Indicar se será prevista e justificar se facultada (art. 63 da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_6_1_justificativa_vistoria"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group simplificado-hide">
+                    <label for="c8_7_tem_confidencialidade">8.7 Há necessidade de assinatura de termos de ciência e
+                        confidencialidade?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_7_tem_confidencialidade" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="confidencialidade">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_7_tem_confidencialidade"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_7_confidencialidade" class="form-group conditional-field simplificado-hide"
+                    style="display: none;">
+                    <label for="c8_7_1_justificativa_confidencialidade">8.7.1 Justificativa da necessidade de assinatura
+                        dos termos</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_7_1_justificativa_confidencialidade" rows="3"
+                            placeholder="Indicar se será necessário, considerando objeto e tipo de informação..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_7_1_justificativa_confidencialidade"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_8_permite_subcontratacao">8.8 Será permitida subcontratação?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_8_permite_subcontratacao" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="subcontratacao">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_8_permite_subcontratacao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_8_subcontratacao" class="form-group conditional-field" style="display: none;">
+                    <label for="c8_8_1_justificativa_subcontratacao">8.8.1 Justificativa da permissão de
+                        subcontratação</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_8_1_justificativa_subcontratacao" rows="3"
+                            placeholder="Indicar se permitida, qual parte, justificar (art. 74, §4°, 122 da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_8_1_justificativa_subcontratacao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_9_permite_consorcio">8.9 Será permitida formação de consórcio?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_9_permite_consorcio" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="consorcio">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_9_permite_consorcio"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_9_proibicao_consorcio" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_9_1_justificativa_proibicao_consorcio">8.9.1 Justificativa da proibição de
+                        consórcio</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_9_1_justificativa_proibicao_consorcio" rows="3"
+                            placeholder="Justificar tecnicamente por que a formação de consórcio não é permitida..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_9_1_justificativa_proibicao_consorcio"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_9_permisao_consorcio" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_9_2_tem_limite_consorcio">8.9.2 Há limite para a quantidade de empresas
+                        consorciadas?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_9_2_tem_limite_consorcio" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="limite_consorcio">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_9_2_tem_limite_consorcio"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_9_2_detalhes_limite" class="form-group conditional-field"
+                    style="display: none;">
+                    <div class="form-group">
+                        <label for="c8_9_2_1_quantidade_maxima">8.9.2.1 Quantidade máxima de empresas
+                            consorciadas</label>
+                        <div class="input-with-ai">
+                            <input type="text" id="c8_9_2_1_quantidade_maxima" class="full-width-input"
+                                placeholder="Ex: 3" oninput="this.value = this.value.replace(/\D/g, '')">
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_9_2_1_quantidade_maxima"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c8_9_2_2_justificativa_limite">8.9.2.2 Justificativa do limite de empresas
+                            consorciadas</label>
+                        <div class="input-with-ai">
+                            <textarea id="c8_9_2_2_justificativa_limite" rows="3"
+                                placeholder="Justificar tecnicamente o motivo do limite..."></textarea>
+                            <button class="ai-help-button" data-action="get-ai-help"
+                                data-target-field="c8_9_2_2_justificativa_limite"><i class="fas fa-book-open"
+                                    aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_10_permite_cooperativas">8.10 Será permitida participação de cooperativas?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_10_permite_cooperativas" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="cooperativas">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_10_permite_cooperativas"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_10_proibicao_cooperativas" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_10_1_justificativa_proibicao_cooperativas">8.10.1 Justificativa da proibição de
+                        cooperativas</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_10_1_justificativa_proibicao_cooperativas" rows="3"
+                            placeholder="Justificar eventual afastamento (art. 16 da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_10_1_justificativa_proibicao_cooperativas"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_11_permite_estrangeiras">8.11 Será permitida a participação de empresas
+                        estrangeiras?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_11_permite_estrangeiras" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="estrangeiras">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_11_permite_estrangeiras"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_11_proibicao_estrangeiras" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_11_1_justificativa_proibicao_estrangeiras">8.11.1 Justificativa da proibição de
+                        empresas estrangeiras</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_11_1_justificativa_proibicao_estrangeiras" rows="3"
+                            placeholder="Justificar por que a participação de empresas estrangeiras não é permitida..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_11_1_justificativa_proibicao_estrangeiras"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_11_permisao_estrangeiras" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_11_2_tem_margem_preferencia">8.11.2 É cabível margem de preferência ao produto ou
+                        serviço nacional?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_11_2_tem_margem_preferencia" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="margem_preferencia">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_11_2_tem_margem_preferencia"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_11_2_detalhes_margem" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_11_2_1_detalhe_margem">8.11.2.1 Detalhamento da margem de preferência</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_11_2_1_detalhe_margem" rows="3"
+                            placeholder="Detalhar a margem de preferência aplicável (art. 26 da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_11_2_1_detalhe_margem"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c8_12_permite_pessoa_fisica">8.12 Será permitida a participação de pessoa
+                        física?</label>
+                    <div class="input-with-ai">
+                        <select id="c8_12_permite_pessoa_fisica" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="pessoa_fisica">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_12_permite_pessoa_fisica"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c8_12_proibicao_pessoa_fisica" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c8_12_1_justificativa_proibicao_pessoa_fisica">8.12.1 Justificativa da proibição de
+                        pessoa física</label>
+                    <div class="input-with-ai">
+                        <textarea id="c8_12_1_justificativa_proibicao_pessoa_fisica" rows="3"
+                            placeholder="Ponderar se condizente com o objeto e requisitos..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c8_12_1_justificativa_proibicao_pessoa_fisica"><i
+                                class="fas fa-book-open" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="cap9" class="tab-content">
+                <h2><i class="fas fa-file-signature chapter-icon" aria-hidden="true"></i>Capítulo 9: Regras para o
+                    Sistema de Registro de Preços</h2>
+                <p class="warning-text">Este capítulo só é aplicável se "Sistema de Registro de Preços" for selecionado
+                    no item 8.2.</p>
+
+                <div class="form-group">
+                    <label for="c9_1_permite_quantitativo_inferior">9.1 Será permitido ao licitante oferecer proposta em
+                        quantitativo inferior ao máximo previsto no edital?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_1_permite_quantitativo_inferior" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="quantitativo_inferior">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_1_permite_quantitativo_inferior"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_1_quantitativo_inferior" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c9_1_1_justificativa_quantitativo_inferior">9.1.1 Justificativa da permissão de
+                        quantitativo inferior ao máximo</label>
+                    <div class="input-with-ai">
+                        <textarea id="c9_1_1_justificativa_quantitativo_inferior" rows="3"
+                            placeholder="Justificar (art. 82, IV da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_1_1_justificativa_quantitativo_inferior"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c9_2_permite_precos_diferentes">9.2 Será permitida a previsão de preços diferentes para
+                        o mesmo item?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_2_permite_precos_diferentes" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="precos_diferentes">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_2_permite_precos_diferentes"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_2_precos_diferentes" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c9_2_1_justificativa_precos_diferentes">9.2.1 Justificativa para a previsão de preços
+                        diferentes</label>
+                    <div class="input-with-ai">
+                        <textarea id="c9_2_1_justificativa_precos_diferentes" rows="3"
+                            placeholder="Justificar em razão do local de entrega, forma e local de acondicionamento (art. 82, III da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_2_1_justificativa_precos_diferentes"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c9_3_permite_mais_de_um_fornecedor">9.3 Será permitido o registro de mais de um
+                        fornecedor ou prestador de serviço?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_3_permite_mais_de_um_fornecedor" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="mais_de_um_fornecedor">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_3_permite_mais_de_um_fornecedor"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_3_mais_de_um_fornecedor" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c9_3_1_justificativa_mais_de_um_fornecedor">9.3.1 Justificativa da permissão do registro
+                        de mais de um fornecedor</label>
+                    <div class="input-with-ai">
+                        <textarea id="c9_3_1_justificativa_mais_de_um_fornecedor" rows="3"
+                            placeholder="Justificar (art. 82, VII da Lei 14.133/2021)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_3_1_justificativa_mais_de_um_fornecedor"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c9_4_permite_adesao_futura">9.4 Será permitida a adesão futura de órgãos ou entidades
+                        não participantes?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_4_permite_adesao_futura" class="full-width-input"
+                            data-action="toggle-conditional" data-toggle-group="adesao_futura">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_4_permite_adesao_futura"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_4_adesao_futura" class="form-group conditional-field" style="display: none;">
+                    <label for="c9_4_1_justificativa_adesao_futura">9.4.1 Justificativa da permissão de adesão
+                        futura</label>
+                    <div class="input-with-ai">
+                        <textarea id="c9_4_1_justificativa_adesao_futura" rows="3"
+                            placeholder="Justificar e estimar quantidades (Decreto nº 11.462/2023)..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_4_1_justificativa_adesao_futura"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="c9_5_permite_prorrogacao">9.5 Será permitida a prorrogação da Ata de Registro de
+                        Preços?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_5_permite_prorrogacao" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="prorrogacao_ata">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_5_permite_prorrogacao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_5_prorrogacao_detalhes" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c9_5_1_renova_quantidades">9.5.1 As quantidades registradas na Ata serão renovadas ao
+                        valor original quando ela for prorrogada?</label>
+                    <div class="input-with-ai">
+                        <select id="c9_5_1_renova_quantidades" class="full-width-input" data-action="toggle-conditional"
+                            data-toggle-group="renovacao_quantidades_ata">
+                            <option value="">Selecione...</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                        </select>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_5_1_renova_quantidades"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="conditional_c9_5_1_1_justificativa_renovacao" class="form-group conditional-field"
+                    style="display: none;">
+                    <label for="c9_5_1_1_justificativa_renovacao">9.5.1.1 Justificativa da renovação das quantidades da
+                        Ata</label>
+                    <div class="input-with-ai">
+                        <textarea id="c9_5_1_1_justificativa_renovacao" rows="3"
+                            placeholder="Justificar a necessidade de renovar as quantidades registradas..."></textarea>
+                        <button class="ai-help-button" data-action="get-ai-help"
+                            data-target-field="c9_5_1_1_justificativa_renovacao"><i class="fas fa-book-open"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="anexos" class="tab-content">
+                <h2><i class="fas fa-paperclip chapter-icon" aria-hidden="true"></i>Anexos</h2>
+                <p class="warning-text">Liste aqui os documentos que serão anexados a este ETP no SEI.</p>
+                <div id="anexos_container">
+                    <button class="add-button" data-action="add-anexo"><i class="fas fa-plus-circle"
+                            aria-hidden="true"></i> Adicionar Outro Anexo</button>
+                    <!-- Anexos dinâmicos -->
+                </div>
+                <button class="add-button" data-action="add-anexo"><i class="fas fa-plus-circle" aria-hidden="true"></i>
+                    Adicionar Outro Anexo</button>
+                <hr>
+                <div class="form-group">
+                    <label for="anexos_lista_texto_table_container">Lista de Anexos</label>
+                    <div id="anexos_lista_texto_table_container" class="summary-table-container">
+                        <!-- Tabela de resumo de anexos -->
+                    </div>
+                    <small><i>Esta lista é gerada automaticamente e não pode ser editada diretamente aqui.</i></small>
+                </div>
+                <!-- Barra de navegação inferior (Capítulos intermediários) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="btn-nav-chapter" data-action="next-chapter">Próximo Capítulo <i
+                            class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <div id="consolidacao" class="tab-content">
+                <h2><i class="fas fa-layer-group chapter-icon" aria-hidden="true"></i>ETP Consolidado</h2>
+                <p class="warning-text">⚠️ Atenção: As sugestões de texto fornecidas pelos modelos de inteligência
+                    artificial deste aplicativo têm caráter auxiliar e podem conter imprecisões. A responsabilidade pelo
+                    conteúdo final é exclusivamente do usuário, que deve revisar, validar e adaptar as informações
+                    conforme o contexto e as exigências normativas aplicáveis.</p>
+
+                <!--<div class="export-buttons">-->
+                <!-- Botão Versão Tabela -->
+                <!--<button data-action="export-etp" data-format="docx"><i class="fas fa-file-word" aria-hidden="true"></i> Exportar DOCX</button>-->
+
+                <!-- Botão Versão Texto (Novo) -->
+                <!--<button class="etp-tool-button btn-export-primary" data-action="export-etp" data-format="docx-text"><i class="fas fa-file-alt" aria-hidden="true"></i> Gerar Documento Word</button>
+                </div>-->
+
+                <div id="consolidation_container">
+                    <!-- O conteúdo consolidado e retrátil será gerado aqui pelo JavaScript -->
+                    <p class="placeholder-text">Gerando visualização consolidada...</p>
+                </div>
+                <!-- Barra de navegação inferior (Aba Consolidação) -->
+                <div class="bottom-nav-bar">
+                    <button class="btn-nav-chapter btn-nav-prev" data-action="prev-chapter"><i
+                            class="fas fa-arrow-left"></i> Capítulo Anterior</button>
+                    <button class="etp-tool-button btn-export-primary" data-action="export-etp" data-format="docx-text" style="font-size: 1em; padding: 12px 20px;"><i class="fas fa-file-alt" aria-hidden="true"></i>Gerar Documento Word</button>
+                    <button class="etp-tool-button btn-export-primary" data-action="copy-to-sei" style="font-size: 1em; padding: 12px 20px;"><i class="fas fa-clipboard" aria-hidden="true"></i> Copiar Documento para o SEI</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiResponseModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-action="close-ai-modal">×</span>
+
+            <h4 id="manualItemTitle"
+                style="color: #0056b3; margin-top: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px;"></h4>
+            <br>
+
+            <!-- Seção da IA -->
+            <div id="aiHelpSectionContainer">
+                <h3><i class="fas fa-book-open" aria-hidden="true"></i> Inteligência Artificial Especialista em ETP</h3>
+
+                <div id="aiComplianceAnalysisSection" class="manual-content-block">
+                    <h4>Avaliação Preliminar de Conformidade:</h4>
+                    <pre id="aiComplianceAnalysis"></pre>
+                </div>
+
+                <p class="warning-text ">⚠️ <strong>Atenção:</strong> As sugestões de texto fornecidas pelos modelos de
+                    inteligência artificial deste aplicativo têm caráter auxiliar e podem conter imprecisões. A
+                    responsabilidade pelo conteúdo final é exclusivamente do usuário, que deve revisar, validar e
+                    adaptar as informações conforme o contexto e as exigências normativas aplicáveis.<br><br>Modelo de
+                    linguagem usado: <span id="aiModelName"></span></p>
+                <hr>
+            </div>
+
+            <!-- Seção do Manual -->
+            <h3><i class="fas fa-book" aria-hidden="true"></i> Manual de Elaboração de ETP</h3>
+            <div id="manualContentSection">
+                <div id="manualConceitoContent" class="manual-content-block">
+                    <p class="placeholder-text">Carregando conteúdo do manual...</p>
+                </div>
+                <div id="manualComoPreencherContent" class="manual-content-block">
+                    <p class="placeholder-text">Carregando conteúdo do manual...</p>
+                </div>
+                <!-- Nova seção para Fundamentação Legal -->
+                <div id="manualFundamentacaoContent" class="manual-content-block">
+                    <p class="placeholder-text">Carregando conteúdo do manual...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal de Configurações de IA -->
+    <div id="aiSettingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-action="close-ai-settings-modal">×</span>
+            <h3><i class="fas fa-cog" aria-hidden="true"></i> Habilitação de Inteligência Artificial</h3>
+
+            <div class="form-group">
+                <label>C.1 Habilitar um assistente de IA especialista em ETP?</label>
+                <div class="checkbox-group">
+                    <span>
+                        <input type="radio" id="useAiRadioYes" name="useAi" value="yes">
+                        <label for="useAiRadioYes">Sim</label>
+                    </span>
+                    <span>
+                        <input type="radio" id="useAiRadioNo" name="useAi" value="no">
+                        <label for="useAiRadioNo">Não</label>
+                    </span>
+                </div>
+            </div>
+
+            <div id="aiSettingsContainer" style="display: none;">
+                <hr>
+                <div class="form-group">
+                    <label>Provedor de IA</label>
+                    <p class="info-text">Atualmente, o aplicativo suporta o provedor <strong>Groq</strong>, que oferece
+                        acesso gratuito e de alta velocidade a modelos de linguagem de ponta. Para obter sua chave de
+                        API gratuita, siga estes passos:</p>
+                    <ol class="info-list">
+                        <li>Acesse o site <a href="https://console.groq.com/keys"
+                                target="_blank">console.groq.com/keys</a>.</li>
+                        <li>Faça login com sua conta do Google ou GitHub.</li>
+                        <li>Clique em "Create API Key" e dê um nome para sua chave.</li>
+                        <li>Copie a chave gerada e cole-a no campo abaixo.</li>
+                    </ol>
+                </div>
+
+                <div class="form-group">
+                    <label for="apiKeyInput">Chave de API (Groq)</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="password" id="apiKeyInput" class="full-width-input"
+                            placeholder="Cole sua chave de API aqui (ex: gsk_...)">
+                        <i class="fas fa-eye" id="toggleApiKeyVisibility"
+                            style="position: absolute; right: 15px; cursor: pointer; color: #6c757d;"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>C.2 Seleção de Modelos de LLM</label>
+                    <div class="checkbox-group">
+                        <span>
+                            <input type="radio" id="modelModeDefault" name="modelMode" value="default">
+                            <label for="modelModeDefault">Usar modelos padrão recomendados pelo aplicativo</label>
+                        </span>
+                        <span>
+                            <input type="radio" id="modelModeCustom" name="modelMode" value="custom">
+                            <label for="modelModeCustom">Configurar modelos personalizados</label>
+                        </span>
+                    </div>
+                </div>
+
+                <div id="customModelsSection" class="conditional-field" style="display: none;">
+                    <label>Modelos Personalizados (em ordem de prioridade)</label>
+                    <div id="customModelsList">
+                        <!-- Campos de modelo serão adicionados dinamicamente aqui -->
+                    </div>
+                    <button class="add-button" id="addModelButton"><i class="fas fa-plus-circle"></i> Incluir
+                        Modelo</button>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <button class="etp-tool-button" id="testApiConnectionButton"><i class="fas fa-plug"></i> Testar
+                        Conexão</button>
+                    <div id="testConnectionResult" class="info-text" style="margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="save-button" id="saveAiSettingsButton"><i class="fas fa-save"></i> Salvar e
+                    Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal Sobre -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-action="close-about-modal">×</span>
+
+            <h4><i class="fas fa-info-circle" style="margin-right: 8px;"></i> Sobre o Gerador Inteligente de ETP</h4>
+            <p>Esta ferramenta foi desenvolvida para simplificar e agilizar a elaboração de Estudos Técnicos
+                Preliminares (ETP) no âmbito do Tribunal Superior Eleitoral, alinhando o processo às exigências da Lei
+                14.133/2021 (Licitações e Contratos).</p>
+            <hr>
+
+            <!-- TABELA DE DOCUMENTAÇÃO -->
+            <table class="about-resources-table">
+                <thead>
+                    <tr>
+                        <th>Recurso</th>
+                        <th>Descrição</th>
+                        <th>Acesso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Manual de Elaboração de ETP</strong></td>
+                        <td>Referência doutrinária e prática completa, com conceito, forma de preenchimento e
+                            fundamentação legal de cada campo do ETP.</td>
+                        <td>
+                            <button class="etp-tool-button" id="btnAbrirManualEtp">
+                                Manual <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Guia Rápido</strong></td>
+                        <td>Passo a passo detalhado sobre como usar todas as funcionalidades e recursos do aplicativo.
+                        </td>
+                        <td>
+                            <button class="etp-tool-button" id="btnAbrirGuiaRapido">
+                                Guia <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Documentação Técnica</strong></td>
+                        <td>Detalhes sobre a arquitetura do sistema, dicionário de dados (config.js) e lógica de
+                            integração com IA.</td>
+                        <td>
+                            <button class="etp-tool-button" id="btnAbrirDocTecnica">
+                                Doc. Técnica <i class="fas fa-code"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+            <h4>Fundamentação</h4>
+            <ul>
+                <li>Lei nº 14.133, de 1º de abril de 2021</li>
+                <li>Instrução Normativa TSE nº 11, de 29 de setembro de 2021</li>
+                <li>Manual de Elaboração de ETP do Tribunal Superior Eleitoral</li>
+            </ul>
+            <hr>
+
+            <h4>Responsáveis pelo Projeto</h4>
+            <p>O desenvolvimento desta solução foi uma iniciativa da Secretaria de Administração do TSE, com a
+                colaboração das seguintes pessoas:</p>
+            <p><strong>Apoio Institucional:</strong></p>
+            <ul>
+                <li>Juliana Milagres de Loyola Fleury<br><em>Secretária de Administração do TSE.</em></li>
+            </ul>
+            <p><strong>Desenvolvimento:</strong></p>
+            <ul>
+                <li>Rodrigo Novaes Gonçalves (Núcleo de Pesquisa e Desenvolvimento - NPD/SAD)<br><em>Responsável pelo
+                        planejamento, arquitetura, desenvolvimento do código-fonte e coautoria do modelo de ETP.</em>
+                </li>
+                <li>Ana Paula Muniz da Silva (Núcleo de Apoio ao Planejamento das Contratações -
+                    NAPC/SAD)<br><em>Responsável pela construção e redação do modelo de ETP que estrutura os campos do
+                        aplicativo.</em></li>
+            </ul>
+            <hr>
+
+            <h4>Tecnologias e Agradecimentos</h4>
+            <p>Este aplicativo foi construído com o uso de tecnologias de código aberto e serviços de terceiros, aos
+                quais estendemos nossos agradecimentos:</p>
+            <ul>
+                <li><strong>Groq.com:</strong> Pelo acesso aos modelos de linguagem de alta velocidade.</li>
+                <li><strong>Docx.js.org:</strong> Pela biblioteca de exportação para Word (.docx).</li>
+                <li><strong>Fontawesome.com:</strong> Pelos ícones utilizados na interface.</li>
+                <li><strong>Aistudio.google.com:</strong> Pelo acesso aos modelos de IA utilizados como assistentes
+                    inteligentes no desenvolvimento.</li>
+            </ul>
+            <hr>
+
+            <h4>Aviso de Responsabilidade</h4>
+            <p class="warning-text" style="font-size: 0.95em;">⚠️ As sugestões de texto fornecidas pelos modelos de
+                inteligência artificial deste aplicativo têm caráter auxiliar e podem conter imprecisões. A
+                responsabilidade pelo conteúdo final é exclusivamente do usuário, que deve revisar, validar e adaptar as
+                informações conforme o contexto e as exigências normativas aplicáveis.</p>
+            <div style="text-align: center; font-size: 0.9em; color: #6c757d; margin-top: 25px;">Secretaria de
+                Administração do Tribunal Superior Eleitoral</div>
+
+        </div>
+    </div>
+
+    <!-- Modal do Tutorial -->
+    <div id="videoTutorialModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" data-action="close-video-modal">×</span>
+            <h3><i class="fas fa-video" aria-hidden="true"></i> Como Usar o Gerador Inteligente de ETP</h3>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <i class="fas fa-photo-video"></i>
+                    <p>O vídeo tutorial estará disponível em breve.</p>
+                </div>
+                <!-- Exemplo de como adicionar o vídeo do YouTube no futuro:
+                <iframe width="100%" height="100%" src="LINK_DO_SEU_VIDEO_AQUI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                -->
+            </div>
+            <div class="modal-footer">
+                <button class="etp-tool-button" id="btnGuiaRapidoModal"><i class="fas fa-book-reader"
+                        aria-hidden="true"></i> Acessar Guia Rápido</button>
+            </div>
+        </div>
+    </div>
+    <div id="toastNotification" class="toast-notification"><i class="fas fa-check-circle"></i> Conteúdo copiado! Vá no SEI e aperte Ctrl+V.</div>
+
+    <script src="manual_content.js"></script>
+    <script src="prompts.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    <script src="modelo_etp.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1566 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+    margin: 0;
+    background-color: #e6e6e6;
+    color: #343a40;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #004080;
+    color: white;
+    padding: 1rem 1rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: 500;
+}
+
+.app-icon {
+    margin-right: 10px;
+    font-size: 0.9em;
+    vertical-align: middle;
+}
+
+.app-version {
+    display: block;
+    font-size: 1em;
+    color: #e0e0e0;
+    margin-top: 5px;
+}
+
+/* --- BARRA DE FERRAMENTAS ETP --- */
+.etp-toolbar {
+    background-color: #0056b3;
+    padding: 10px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.etp-tool-button {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #0069d9;
+    border: 1px solid #005cbf;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.etp-tool-button:hover {
+    background-color: #0d7aee;
+    border-color: #004080;
+}
+
+.etp-tool-button i {
+    margin-right: 5px;
+}
+
+.btn-export-primary {
+    background-color: #1c7e13;
+}
+
+.btn-export-primary:hover {
+    background-color: #2ba91f;
+}
+
+.btn-tool-help {
+    background-color: #66717a;
+}
+
+.btn-tool-help:hover {
+    background-color: #82888f;
+}
+
+/* --- LAYOUT PRINCIPAL COM ABAS --- */
+
+.tab-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    /* Faz a barra lateral e o conteúdo terem a mesma altura */
+    width: 75%;
+    max-width: 1600px;
+    min-height: 80vh;
+    margin: 25px auto;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    /* Mantém tudo dentro das bordas arredondadas */
+}
+
+.tab-nav {
+    flex: 0 0 310px;
+    /* Largura da barra lateral: não cresce, não encolhe, base de 310px */
+    display: flex;
+    flex-direction: column;
+    background-color: #e2eef8;
+    border-right: 1px solid #dee2e6;
+    padding: 15px 0;
+    overflow-y: auto;
+}
+
+.tab-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Espaço entre ícone e texto */
+    width: 100%;
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #495057;
+    text-align: left;
+    border-left: 4px solid transparent;
+    /* Indicador de aba ativa */
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    border-bottom: 1px solid #c0d4e5;
+}
+
+.tab-button i {
+    font-size: 1.1em;
+    width: 20px;
+    /* Largura fixa para alinhamento dos ícones */
+    text-align: center;
+    color: #888;
+    transition: color 0.2s ease-in-out;
+}
+
+.tab-button.active {
+    background-color: #7db8ef;
+    color: #004080;
+    border-left-color: #0056b3;
+    font-weight: 600;
+}
+
+.tab-button.active i {
+    color: #0056b3;
+}
+
+.tab-button:hover:not(.active) {
+    background-color: #7db8ef;
+}
+
+/* Aumentando a especificidade para sobrescrever o hover sem !important */
+.tab-nav .tab-button.inactive {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: transparent;
+    color: #6c757d;
+}
+
+.tab-nav .tab-button.inactive:hover {
+    background-color: transparent;
+}
+
+.tab-button.inactive i {
+    color: #aaa;
+}
+
+.tab-button.completed i {
+    color: #0056b3;
+}
+
+.tab-button.completed {
+    font-weight: 500;
+}
+
+.tab-button.completed::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1em;
+    color: #0056b3;
+    opacity: 0.5;
+    margin-left: auto;
+    padding-left: 10px;
+}
+
+/* Container para o conteúdo principal e a barra de progresso */
+.main-content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-width: 0;
+}
+
+/* Contêineres das Barras de Progresso */
+.progress-bar-container,
+.tab-progress-container {
+    width: 100%;
+    background-color: #f8f9fa;
+    /* O padding 30px nas laterais alinha as barras perfeitamente com os campos do formulário */
+    padding: 8px 30px;
+    border-bottom: 1px solid #dee2e6;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 20px;
+    background-color: #28a745;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 0 3px 3px 0;
+    transition: width 0.4s ease;
+    box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+}
+
+.main-progress-track {
+    flex-grow: 1;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.tab-progress-track {
+    flex-grow: 1;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    height: 20px;
+    overflow: hidden;
+}
+
+.tab-progress-container .progress-bar {
+    height: 100%;
+    line-height: 20px;
+    background-color: #17a2b8;
+}
+
+.tab-content {
+    padding: 25px 30px;
+    display: none;
+    flex-grow: 1;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2,
+.tab-content h3,
+.tab-content h4 {
+    color: #004080;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.tab-content h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.tab-content h3 {
+    font-size: 1.3em;
+    margin-top: 25px;
+    border-bottom: 1px dashed #e0e0e0;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tab-content h4 {
+    font-size: 1.1em;
+    color: #333;
+    margin-top: 20px;
+}
+
+.chapter-icon {
+    margin-right: 10px;
+    font-size: 1em;
+    color: #0056b3;
+}
+
+/* --- ESTILOS DE FORMULÁRIO (CAMPOS, BOTÕES, LABELS) --- */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.input-with-ai {
+    display: flex;
+    align-items: flex-start;
+    /* Mantém os botões no topo caso o textarea cresça verticalmente */
+    gap: 10px;
+    width: 100%;
+}
+
+/* Estilos comuns para os inputs */
+.input-with-ai textarea,
+.input-with-ai input[type="text"],
+.input-with-ai input[type="number"],
+.input-with-ai select,
+.full-width-input {
+    flex-grow: 1;
+    /* Faz o campo ocupar todo o espaço restante */
+    width: 100%;
+    max-width: none;
+    /* Sobrescreve limitações antigas */
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    margin-bottom: 0;
+    background-color: #fff;
+}
+
+.input-with-ai textarea:focus,
+.input-with-ai input[type="text"]:focus,
+.input-with-ai input[type="number"]:focus,
+.input-with-ai select:focus,
+.full-width-input:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-with-ai input[type="text"][readonly],
+input[type="text"].full-width-input[readonly],
+.input-with-ai textarea[readonly] {
+    background-color: #e9ecef;
+    color: #495057;
+    cursor: default;
+}
+
+.input-with-ai textarea,
+textarea.full-width-input {
+    min-height: 70px;
+    resize: vertical;
+}
+
+/* Estilo unificado para TODOS os botões de IA */
+.ai-help-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    /* Impede que o botão encolha */
+    width: 42px;
+    /* Garante que o botão seja um quadrado perfeito */
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-help-button:hover {
+    background-color: #218838;
+}
+
+/* Exceção: Botão de gerar título (pois ele recebe texto via JS, precisa ser mais largo) */
+button[data-action="generate-title-ai"] {
+    width: auto !important;
+    padding: 0 15px !important;
+    gap: 8px;
+}
+
+/* Estilo para Radio Buttons e Checkboxes com botão IA ao lado do título */
+.label-with-help {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Centraliza o label e o botão verticalmente */
+    margin-bottom: 8px;
+    gap: 15px;
+}
+
+.label-with-help label {
+    margin-bottom: 0;
+    flex-grow: 1;
+    /* Faz o label ocupar o espaço */
+}
+
+/* Botões da IA específicos dentro do label-with-help não precisam de altura forçada */
+.label-with-help .ai-help-button {
+    width: 36px;
+    /* Levemente menor para caber melhor na linha do título */
+    height: 36px;
+    font-size: 1em;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.875em;
+    color: #6c757d;
+}
+
+/* --- ESTILOS PARA ITENS DINÂMICOS (SOLUÇÕES, RISCOS, ETC.) --- */
+
+.solucao-item,
+.risco-item,
+.anexo-item,
+.contratacao-item {
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    background-color: #e2eef8;
+}
+
+.add-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1em;
+}
+
+.add-button:hover {
+    background-color: #0056b3;
+}
+
+.add-button i {
+    font-size: 0.9em;
+}
+
+.remove-solucao-button,
+.remove-risco-button,
+.remove-anexo-button,
+.remove-contratacao-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    margin-left: auto;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.remove-solucao-button:hover,
+.remove-risco-button:hover,
+.remove-anexo-button:hover,
+.remove-contratacao-button:hover {
+    background-color: #c82333;
+}
+
+.remove-solucao-button i,
+.remove-risco-button i,
+.remove-anexo-button i,
+.remove-contratacao-button i {
+    font-size: 0.9em;
+}
+
+hr {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border: 0;
+    border-top: 1px solid #dee2e6;
+}
+
+.save-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.save-button:hover {
+    background-color: #138496;
+}
+
+.export-buttons {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.export-buttons button {
+    padding: 10px 18px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.export-buttons button:hover {
+    background-color: #5a6268;
+}
+
+.export-buttons button i {
+    font-size: 0.9em;
+}
+
+/* --- ESTILOS PARA CHECKBOXES --- */
+
+.form-group input[type="checkbox"] {
+    margin-right: 8px;
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+}
+
+.form-group input[type="checkbox"]+label {
+    font-weight: normal;
+    display: inline;
+    color: #495057;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-group span {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.checkbox-group input[type="checkbox"],
+.checkbox-group input[type="radio"] {
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.checkbox-group label {
+    font-weight: normal;
+    margin-bottom: 0;
+    color: #495057;
+}
+
+.scrollable-checkbox-group {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    width: 93%;
+}
+
+
+/* --- ESTILOS DO MODAL DE AJUDA DA IA --- */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 8% auto;
+    padding: 25px 30px;
+    border: 1px solid #888;
+    width: 75%;
+    max-width: 750px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.close-button {
+    color: #aaa;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #004080;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    font-size: 1.4em;
+}
+
+.modal-content h3 i {
+    margin-right: 8px;
+}
+
+#aiModelUsed {
+    font-size: 0.85em;
+    color: #555;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+#aiModelName {
+    font-weight: bold;
+}
+
+.modal-content h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.modal-content pre:not(#aiComplianceAnalysis) {
+    font-size: 1.1em;
+    line-height: 1.75;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 15px 18px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 350px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+}
+
+/* --- ESTILOS ADICIONAIS E ESPECÍFICOS --- */
+
+.warning-text {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+.conditional-field {
+    padding-left: 20px;
+    border-left: 3px solid #e0e0e0;
+    margin-left: 5px;
+    margin-bottom: 18px;
+}
+
+/* --- ESTILOS PARA AS TABELAS DE RESUMO --- */
+
+.summary-table-container {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-top: 8px;
+    background-color: #f8f9fa;
+}
+
+.summary-table-container .placeholder-text {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    border: none;
+}
+
+table.summary-table {
+    width: 100%;
+    min-width: 600px;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    table-layout: auto;
+}
+
+table.summary-table th,
+table.summary-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    white-space: pre-wrap;
+}
+
+table.summary-table th {
+    background-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+table.summary-table tbody tr:nth-child(even) {
+    background-color: #fdfdff;
+}
+
+table.summary-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* --- ESTILOS PARA A ABA DE CONSOLIDAÇÃO --- */
+
+#consolidation_container {
+    margin-top: 20px;
+}
+
+details.consolidation-chapter {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+details.consolidation-chapter[open] {
+    border-color: #3e84cf;
+}
+
+summary.consolidation-title {
+    padding: 12px 18px;
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #004080;
+    background-color: #f0f6fc;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+summary.consolidation-title:hover {
+    background-color: #e2eef8;
+}
+
+summary.consolidation-title::-webkit-details-marker {
+    display: none;
+}
+
+summary.consolidation-title::before {
+    content: '\f0da';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 12px;
+    transition: transform 0.2s ease-in-out;
+    font-size: 0.9em;
+}
+
+details[open]>summary.consolidation-title::before {
+    transform: rotate(90deg);
+}
+
+.consolidation-content {
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+table.consolidation-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+table.consolidation-table td {
+    padding: 10px 12px;
+    border: 1px solid #e9ecef;
+    vertical-align: top;
+}
+
+table.consolidation-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+table.consolidation-table td:first-child {
+    font-weight: 600;
+    color: #495057;
+    width: 35%;
+}
+
+.consolidation-value-unfilled {
+    color: #6c757d;
+    font-style: italic;
+}
+
+table.consolidation-sub-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    margin-top: 5px;
+    background-color: #fdfdff;
+    border: 1px solid #e0e0e0;
+}
+
+table.consolidation-sub-table td {
+    padding: 8px 10px;
+    border: 1px solid #e9ecef;
+}
+
+table.consolidation-sub-table td:first-child {
+    background-color: #f0f0f0;
+    width: 30%;
+}
+
+/* --- ESTILOS DE ITENS DESATIVADOS POR MODO (SIMÉTRICO) --- */
+
+/* Regra unificada: 
+   - No modo simplificado, apaga os itens .simplificado-hide
+   - No modo completo, apaga os itens .completo-hide (ex: item 1.4)
+*/
+.etp-simplificado-mode .form-group.simplificado-hide,
+body:not(.etp-simplificado-mode) .form-group.completo-hide {
+    display: block !important;
+    opacity: 0.45;
+    pointer-events: none;
+    user-select: none;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px;
+    border: 1px dashed #dee2e6;
+    transition: all 0.3s ease;
+}
+
+/* Garante o cursor de bloqueio nos campos internos */
+.etp-simplificado-mode .form-group.simplificado-hide *,
+body:not(.etp-simplificado-mode) .form-group.completo-hide * {
+    cursor: not-allowed !important;
+}
+
+/* --- Lógica específica para os wrappers do item 3.1 (Troca de Input) --- */
+.etp-simplificado-mode #c3_1_completo_wrapper.form-group {
+    display: none !important;
+}
+
+.etp-simplificado-mode #c3_1_simplificado_wrapper.form-group {
+    display: block !important;
+}
+
+/* Garantia de que o wrapper simplificado do 3.1 não apareça no modo completo */
+body:not(.etp-simplificado-mode) #c3_1_simplificado_wrapper {
+    display: none !important;
+}
+
+/* --- INÍCIO: ETIQUETAS DE EXPLICAÇÃO DOS CAMPOS DESABILITADOS --- */
+
+.etp-simplificado-mode .form-group.simplificado-hide label::after {
+    content: 'Não aplicável ao ETP Simplificado';
+    background-color: #ffc107;
+    color: #000;
+    font-size: 0.8em;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 12px;
+    font-style: normal;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+body:not(.etp-simplificado-mode) .form-group.completo-hide label::after {
+    content: 'Não aplicável ao ETP Completo';
+    background-color: #ffc107;
+    color: #856404;
+    font-size: 0.8em;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 12px;
+    font-style: normal;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* --- NOVOS ESTILOS: MODAL DE CONFIGURAÇÕES DE IA --- */
+
+#aiSettingsModal .modal-content {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.info-text {
+    font-size: 0.9em;
+    color: #495057;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 10px 15px;
+    border-radius: 4px;
+    line-height: 1.7;
+}
+
+.info-list {
+    font-size: 0.9em;
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.info-list li {
+    margin-bottom: 8px;
+}
+
+#customModelsList .dynamic-model-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#customModelsList .dynamic-model-input input {
+    flex-grow: 1;
+}
+
+.remove-model-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 0.9em;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.remove-model-button:hover {
+    background-color: #c82333;
+}
+
+#testConnectionResult {
+    padding: 10px;
+    border-radius: 4px;
+    display: none;
+    /* Começa oculto */
+}
+
+#testConnectionResult.testing {
+    display: block;
+    color: #004085;
+    background-color: #cce5ff;
+    border: 1px solid #b8daff;
+}
+
+#testConnectionResult.success {
+    display: block;
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+#testConnectionResult.error {
+    display: block;
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.modal-footer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+    text-align: right;
+}
+
+.modal-footer .save-button {
+    margin-top: 0;
+}
+
+/* --- ESTILOS PARA O CABEÇALHO DA VERSÃO E BOTÃO SOBRE --- */
+
+.app-version-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    /* Espaçamento entre os itens */
+    margin-top: 8px;
+    color: #e0e0e0;
+}
+
+.app-version,
+.update-date {
+    font-size: 1em;
+}
+
+.about-icon {
+    font-size: 0.8em;
+    color: #b0c4de;
+    /* Cor sutil */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.about-icon:hover {
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* --- ESTILOS PARA O MODAL SOBRE --- */
+
+#aboutModal .modal-content {
+    max-width: 850px;
+    /* Um pouco maior para caber o texto */
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#aboutModal .modal-content h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #0056b3;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+#aboutModal .modal-content ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+#aboutModal .modal-content li {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.about-resources-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95em;
+}
+
+.about-resources-table th {
+    text-align: left;
+    background-color: #f8f9fa;
+    color: #004080;
+    padding: 12px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.about-resources-table td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.about-resources-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Coluna 1: Título */
+.about-resources-table td:nth-child(1) {
+    width: 25%;
+    color: #0056b3;
+}
+
+/* Coluna 2: Descrição */
+.about-resources-table td:nth-child(2) {
+    width: 50%;
+    color: #495057;
+    line-height: 1.4;
+}
+
+/* Coluna 3: Botão */
+.about-resources-table td:nth-child(3) {
+    width: 25%;
+    text-align: center;
+}
+
+/* Ajuste dos botões dentro da tabela para não ficarem muito grandes */
+.about-resources-table .etp-tool-button {
+    width: 130px;
+    justify-content: center;
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+
+/* --- NOVOS ESTILOS PARA O CONTEÚDO DO MANUAL NO MODAL --- */
+
+/* Estilo aplicado aos containers de conteúdo no modal */
+.manual-content-block {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* Estilo unificado para os títulos dentro dos containers */
+.manual-content-block h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+    color: #004080;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+/* Resetando o estilo do <pre> da IA para que ele não pareça uma "caixa" dentro da outra */
+#aiComplianceAnalysis {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.95em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #495057;
+}
+
+.manual-content-block p,
+.manual-content-block ul,
+.manual-content-block .fundamentacao-box {
+    font-size: 0.95em;
+}
+
+.manual-content-block ul {
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.manual-content-block li {
+    margin-bottom: 8px;
+}
+
+/* --- ESTILOS PARA O BANNER DE ALERTA BETA --- */
+
+#beta-alert-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background-color: #fff3cd;
+    /* Tom de amarelo para alerta */
+    color: #856404;
+    /* Cor de texto que contrasta com o fundo */
+    border-bottom: 1px solid #ffeeba;
+    font-size: 0.9em;
+    width: 90%;
+    max-width: 1600px;
+    margin: 0 auto;
+    /* Centraliza o banner */
+    margin-top: 0px;
+    /* Puxa o banner para cima para remover o espaço extra */
+    margin-bottom: -25px;
+    /* Puxa a área de conteúdo para cima para remover o espaço extra */
+    border-radius: 0 0 8px 8px;
+    /* Arredonda apenas os cantos inferiores */
+    box-sizing: border-box;
+}
+
+.beta-alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#close-beta-alert {
+    font-size: 24px;
+    font-weight: bold;
+    color: #856404;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0 10px;
+}
+
+#close-beta-alert:hover {
+    color: #5a4202;
+}
+
+.alert_link {
+    color: rgb(74, 74, 236);
+    text-decoration: none;
+}
+
+/* --- MELHORIAS DE UX (CICATRIZES E BANNERS) --- */
+
+/* 2. Estilo do Banner de Contexto (Topo da aba) */
+.context-banner {
+    background-color: #e2eef8;
+    border-left: 5px solid #0056b3;
+    color: #004080;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    border-radius: 4px;
+    font-size: 0.95em;
+    display: none;
+    /* Oculto por padrão, JS controla */
+    animation: fadeIn 0.3s ease-in;
+}
+
+.context-banner i {
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 3. Ajuste da Barra Lateral (Botões Inativos) */
+/* Sobrescreve regra anterior para garantir que o botão apareça, mas 'apagado' */
+.tab-nav .tab-button.inactive {
+    display: flex !important;
+    /* Força a exibição */
+    opacity: 0.5;
+    background-color: #f1f3f5;
+    color: #adb5bd;
+    cursor: not-allowed;
+    border-left: 4px solid transparent;
+}
+
+.tab-nav .tab-button.inactive:hover {
+    background-color: #f1f3f5 !important;
+    color: #adb5bd !important;
+}
+
+.tab-nav .tab-button.inactive i {
+    color: #adb5bd !important;
+}
+
+/* --- ESTILOS PARA A NOVA BARRA DE FERRAMENTAS --- */
+.toolbar-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 25px;
+    background-color: #004080;
+    margin: 0 10px;
+}
+
+/* --- ESTILOS PARA O MODAL DE VÍDEO --- */
+#videoTutorialModal .modal-content {
+    max-width: 900px;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    /* Proporção 16:9 */
+    background-color: #000;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    background-color: #2c2c2c;
+    text-align: center;
+}
+
+.video-placeholder i {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.video-placeholder p {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+/* --- ESTILO PARA BOTÕES DE AJUDA COM A IA DESATIVADA --- */
+
+body.ai-features-disabled .ai-help-button {
+    background-color: #007bff;
+    /* Um azul informativo, mas não primário */
+}
+
+body.ai-features-disabled .ai-help-button:hover {
+    background-color: #0056b3;
+    /* Tom mais escuro para o hover */
+}
+
+body:not(.ai-features-disabled) .ai-help-button i.fa-book-open::before {
+    content: '\f544';
+    /* Este é o código Unicode para o ícone 'robot' do Font Awesome */
+}
+
+/* --- ESTILOS DA BARRA DE NAVEGAÇÃO INFERIOR --- */
+.bottom-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 45px;
+    margin-bottom: 45px;
+    padding-top: 15px;
+    /*border-top: 1px solid #dee2e6;*/
+}
+
+.btn-nav-chapter {
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #0056b3;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, opacity 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-nav-chapter:hover:not(:disabled) {
+    background-color: #004080;
+}
+
+.btn-nav-prev {
+    background-color: #6c757d;
+}
+
+.btn-nav-prev:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+
+.btn-nav-chapter:disabled {
+    background-color: #a0c4e8;
+    color: #f1f1f1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- ESTILOS PARA NOTIFICAÇÃO (TOAST) DE CÓPIA PARA O SEI --- */
+.toast-notification {
+    visibility: hidden;
+    min-width: 280px;
+    background-color: #28a745;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 16px;
+    position: fixed;
+    z-index: 10000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 1.1em;
+    font-weight: 500;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+}
+
+.toast-notification i {
+    margin-right: 8px;
+}
+
+.toast-notification.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 3.5s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;} 
+    to {bottom: 0; opacity: 0;}
+}
+
+/* --- EFEITO DE DESTAQUE PARA O CAMPO TIPO DE ETP --- */
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.6); border-color: #80bdff; }
+    70% { box-shadow: 0 0 0 8px rgba(0, 123, 255, 0); border-color: #007bff; }
+    100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); border-color: #ced4da; }
+}
+
+.highlight-pulse {
+    animation: pulseGlow 2s infinite !important;
+    border: 2px solid #007bff !important;
+}
+
+/* --- ESTILOS PARA A ABA DE INÍCIO --- */
+.home-tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    height: 100%;
+    padding-top: 25px;
+}
+
+.home-icon {
+    font-size: 4em;
+    color: var(--cor-primaria, #004080);
+    margin-bottom: 20px;
+}
+
+.home-title {
+    font-size: 2em;
+    color: var(--cor-texto, #343a40);
+    margin-bottom: 10px;
+}
+
+.home-subtitle {
+    font-size: 1.2em;
+    color: #6c757d;
+    max-width: 600px;
+    margin-bottom: 40px;
+}
+
+.home-main-button {
+    padding: 15px 35px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--cor-secundaria, #0056b3);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.home-main-button:hover {
+    background-color: var(--cor-primaria, #004080);
+    transform: translateY(-2px);
+}
+
+/* --- ESTILOS PARA OS NOVOS BOTÕES DA ABA INÍCIO --- */
+.home-buttons-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.home-main-button.btn-start {
+    background-color: #0056b3; /* Azul */
+}
+
+.home-main-button.btn-start:hover {
+    background-color: #004080;
+}
+
+.home-main-button.btn-continue {
+    background-color: #28a745; /* Verde para indicar continuação segura */
+}
+
+.home-main-button.btn-continue:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+/* Estilo para quando o botão estiver desabilitado (sem dados salvos) */
+.home-main-button:disabled {
+    background-color: #6c757d !important;
+    color: #ced4da !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.home-secondary-actions {
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}

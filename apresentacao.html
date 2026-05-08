@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação: Gerador Inteligente de ETP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+
+        /* Cores idênticas ao aplicativo original */
+        :root {
+            --tse-blue: #004080;
+            --tse-light-blue: #0056b3;
+            --accent: #28a745;
+            --bg-color: #f8f9fa;
+            --text-dark: #343a40;
+            --text-gray: #6c757d;
+            --border-color: #dee2e6;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            overflow: hidden;
+        }
+
+        /* Fake App Header para os slides internos */
+        .app-header-fake {
+            background-color: var(--tse-blue);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .slide:not(#slide-1).active~.app-header-fake {
+            opacity: 1;
+        }
+
+        .deck {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateY(20px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6rem 10% 4rem 10%;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Tipografia Direta */
+        h1 {
+            font-size: 4.5rem;
+            color: var(--tse-blue);
+            margin: 0 0 1rem 0;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 3rem;
+            color: var(--tse-blue);
+            margin: 0 0 2.5rem 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        p {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin: 0 0 1rem 0;
+        }
+
+        /* Layouts Visuais */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            color: var(--tse-light-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--tse-blue);
+            margin-bottom: 1rem;
+        }
+
+        .card-text {
+            font-size: 1.4rem;
+            color: var(--text-gray);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #e2eef8;
+            color: var(--tse-blue);
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Elementos que imitam a UI do App */
+        .fake-btn {
+            background-color: var(--tse-light-blue);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fake-btn.green {
+            background-color: var(--accent);
+        }
+
+        .fake-progress {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .fake-progress-bar {
+            height: 100%;
+            width: 65%;
+            background: var(--accent);
+        }
+
+        /* Capa */
+        #slide-1 {
+            background: var(--tse-blue);
+        }
+
+        #slide-1 h1 {
+            color: white;
+            font-size: 5rem;
+        }
+
+        #slide-1 p {
+            color: #a0c4e8;
+            font-size: 2.2rem;
+        }
+
+        #slide-1 .hero-icon {
+            font-size: 8rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        /* Navegação */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background: white;
+            color: var(--tse-blue);
+            border: 1px solid var(--border-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-nav:hover {
+            background: var(--tse-light-blue);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="deck">
+
+        <!-- Slide 1: Capa -->
+        <div class="slide active" id="slide-1">
+            <i class="fas fa-robot hero-icon"></i>
+            <h1>Gerador Inteligente de ETP</h1>
+            <p>Planejamento de contratações guiado, seguro e alinhado à Lei 14.133/2021</p>
+        </div>
+
+        <!-- Fake Header para demais slides -->
+        <div class="app-header-fake">
+            <i class="fas fa-robot style=" margin-right: 10px; font-size: 1.5rem;"></i>
+            <span style="font-size: 1.5rem; font-weight: 600;">Gerador Inteligente de ETP</span>
+        </div>
+
+        <!-- Slide 2: O Problema -->
+        <div class="slide" id="slide-2">
+            <h2>O Problema Atual</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fas fa-file-word card-icon"></i>
+                    <div class="card-title">Textos Livres</div>
+                    <div class="card-text">Formulários longos e complexos, gerando documentos fora do padrão.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-book-dead card-icon"></i>
+                    <div class="card-title">Regras Complexas</div>
+                    <div class="card-text">Dificuldade do demandante leigo na aplicação da Lei 14.133/2021.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-undo-alt card-icon"></i>
+                    <div class="card-title">Retrabalho</div>
+                    <div class="card-text">Retornos constantes após análise do ETP pela Secretaria de Administração.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: A Solução -->
+        <div class="slide" id="slide-3">
+            <h2>A Solução: Como Funciona?</h2>
+            <div class="grid-2" style="align-items: center;">
+                <div>
+                    <div class="badge">1. Fluxo Guiado</div>
+                    <p style="font-size: 1.6rem; color: var(--text-gray); margin-bottom: 2rem;">A interface da aplicação divide o
+                        formulário em capítulos, oculta campos desnecessários e mostra progresso visual.</p>
+
+                    <div class="badge">2. Manual Integrado</div>
+                    <p style="font-size: 1.6rem; color: var(--text-gray); margin-bottom: 2rem;">As regras do Manual de
+                        Elaboração de ETP não
+                        ficam em outro PDF. Elas abrem na tela, campo a campo.</p>
+
+                    <div class="badge">3. Revisor Virtual (IA)</div>
+                    <p style="font-size: 1.6rem; color: var(--text-gray);">Quando habilitada, a Inteligência Artificial
+                        lê o texto do demandante, valida contra o Manual de Elaboração de ETP e sugere melhorias se julgar necessário.</p>
+                </div>
+                <div class="card" style="background: #f1f3f5;">
+                    <div style="text-align: left; margin-bottom: 1rem;">
+                        <strong>Solução Escolhida</strong>
+                    </div>
+                    <div class="fake-progress">
+                        <div class="fake-progress-bar"></div>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 2rem;">
+                        <div class="fake-btn green"><i class="fas fa-robot"></i> Analisar Texto com IA</div>
+                        <div class="fake-btn"><i class="fas fa-file-word"></i> Gerar Documento Word</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Arquitetura (TI) -->
+        <div class="slide" id="slide-4">
+            <h2>Arquitetura: Foco em Autonomia</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fas fa-server card-icon" style="color: #dc3545;"></i>
+                    <div class="card-title">Zero Servidor</div>
+                    <div class="card-text">Sem backend. Sem banco de dados. 100% no navegador.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-save card-icon"></i>
+                    <div class="card-title">Dados Locais</div>
+                    <div class="card-text">O Rascunho pode ser salvo em JSON na própria máquina do demandante.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-key card-icon"></i>
+                    <div class="card-title">Chave Própria (BYOK)</div>
+                    <div class="card-text">O TSE não gerencia cotas de IA. Cada usuário configura a sua chave gratuita.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Segurança (TI) -->
+        <div class="slide" id="slide-5">
+            <h2>Segurança da Informação</h2>
+            <div class="grid-2">
+                <div class="card" style="border-top: 5px solid var(--tse-blue);">
+                    <i class="fas fa-code card-icon"></i>
+                    <div class="card-title">Proteção contra XSS</div>
+                    <div class="card-text" style="text-align: left;">
+                        As respostas da IA são convertidas em <strong>texto puro</strong> antes de irem para a tela.
+                        Scripts maliciosos não são executados.
+                    </div>
+                </div>
+                <div class="card" style="border-top: 5px solid var(--accent);">
+                    <i class="fas fa-user-shield card-icon"></i>
+                    <div class="card-title">Prompt Injection</div>
+                    <div class="card-text" style="text-align: left;">
+                        Como não há banco de dados, tentar hackear a IA afeta <strong>apenas a tela do próprio
+                            usuário</strong>. É impossível acessar processos de terceiros.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Valor Estratégico (Secretários) -->
+        <div class="slide" id="slide-6">
+            <h2>Ganhos Estratégicos</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <i class="fas fa-check-double card-icon"></i>
+                    <div class="card-title">Qualidade</div>
+                    <div class="card-text">Documentos melhor padronizados e pré-avaliados por IA.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-forward card-icon"></i>
+                    <div class="card-title">Celeridade</div>
+                    <div class="card-text">Fim do bloqueio da "página em branco", com auxílio da IA na redação.</div>
+                </div>
+                <div class="card">
+                    <i class="fas fa-graduation-cap card-icon"></i>
+                    <div class="card-title">Capacitação</div>
+                    <div class="card-text">Aprendizado da Lei 14.133 na prática, durante a elaboração do documento.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Encerramento -->
+        <div class="slide" id="slide-7">
+            <i class="fas fa-rocket card-icon" style="font-size: 6rem; color: var(--accent);"></i>
+            <h1 style="font-size: 4rem; margin-top: 1rem;">Pronto para uso.</h1>
+            <p style="text-align: center;">Sem impacto na infraestrutura.<br><strong>Com impacto no resultado</strong>.
+            </p>
+            <a href="https://npdtse.github.io/gerador-etp/" target="_blank" class="fake-btn green"
+                style="margin-top: 3rem; font-size: 1.8rem; padding: 15px 30px; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s;">
+                <i class="fas fa-external-link-alt"></i> Gerador Inteligente de ETP
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Controles -->
+    <div class="controls">
+        <button class="btn-nav" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+        <button class="btn-nav" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function updateSlide() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === currentSlide) slide.classList.add('active');
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) { currentSlide++; updateSlide(); }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) { currentSlide--; updateSlide(); }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+
+</html>

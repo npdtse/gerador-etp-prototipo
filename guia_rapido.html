@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Rápido - Gerador Inteligente de ETP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        /* Estilos base inspirados no aplicativo principal para uma experiência coesa */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+            line-height: 1.7;
+        }
+
+        header {
+            background-color: #004080;
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 500;
+        }
+
+        header h1 i {
+            margin-right: 12px;
+        }
+        
+        header .subtitle {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        section {
+            background-color: #ffffff;
+            padding: 2rem 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #dee2e6;
+        }
+
+        h2 {
+            font-size: 1.6em;
+            color: #004080;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        h2 i {
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #0056b3;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        ul, ol {
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+        
+        a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Estilos para caixas de destaque */
+        .info-box, .warning-box {
+            padding: 15px 20px;
+            margin: 1.5rem 0;
+            border-radius: 6px;
+            border-left: 5px solid;
+        }
+
+        .info-box {
+            background-color: #e2eef8;
+            border-color: #0056b3;
+        }
+
+        .warning-box {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        
+        .warning-box strong {
+            color: #856404;
+        }
+
+        /* Estilo para trechos de código ou texto a ser copiado */
+        .code-snippet {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e9ecef;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+
+        /* Estilos para a seção de FAQ */
+        .faq-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 15px 0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        
+        .faq-item summary {
+            font-weight: 600;
+            color: #343a40;
+            cursor: pointer;
+            list-style: none; /* Remove a seta padrão */
+            display: flex;
+            align-items: center;
+        }
+
+        .faq-item summary::-webkit-details-marker {
+            display: none; /* Remove a seta padrão no Chrome/Safari */
+        }
+        
+        .faq-item summary::before {
+            content: '\f0da'; /* Ícone de seta para a direita do Font Awesome */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 12px;
+            transition: transform 0.2s ease-in-out;
+            font-size: 0.9em;
+            color: #0056b3;
+        }
+        
+        .faq-item[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+        .faq-item .faq-answer {
+            padding-top: 15px;
+            padding-left: 25px;
+            color: #495057;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-book-open"></i>Guia Rápido do Gerador Inteligente de ETP</h1>
+        <p class="subtitle">Tudo o que você precisa saber para começar a usar a ferramenta</p>
+    </header>
+
+    <div class="container">
+
+        <section id="boas-vindas">
+            <h2><i class="fa-solid fa-hands-holding-circle"></i>Bem-vindo!</h2>
+            <p>
+                Esta é uma ferramenta criada para simplificar e acelerar a elaboração de <strong>Estudos Técnicos Preliminares (ETP)</strong>.
+                Seguindo o <a href="manual_etp.html" target="_blank">Manual de Elaboração de ETP do TSE</a> e as diretrizes da Lei nº 14.133/2021, o objetivo é oferecer um ambiente guiado e inteligente para tornar o trabalho mais eficiente.
+            </p>
+            <p>
+                Você pode usar o aplicativo de forma completa para criar, salvar e exportar seu ETP sem precisar de nenhuma configuração adicional.
+                E, quando quiser, pode ativar a <strong>Inteligência Artificial Especialista em ETP</strong> para ter uma ajuda extra.
+            </p>
+        </section>
+
+        <!--<section id="como-abrir">
+            <h2><i class="fa-solid fa-rocket"></i>Como Abrir o Aplicativo</h2>
+            <p>Após descompactar a pasta .zip, o primeiro passo é abrir o aplicativo. É muito simples:</p>
+            <div class="info-box">
+                Encontre o arquivo chamado <span class="code-snippet">index.html</span> e dê um duplo-clique nele. O Gerador de ETP será aberto no seu navegador.
+            </div>
+            <p>Não é preciso instalar nada. Tudo funciona diretamente no seu computador.</p>
+        </section>-->
+        
+        <section id="uso-basico">
+            <h2><i class="fa-solid fa-keyboard"></i>Como Começar (Uso Básico)</h2>
+            <p>Você pode criar seu ETP do início ao fim usando apenas as funcionalidades básicas do aplicativo.</p>
+
+            <h3>1. Preencha seu ETP</h3>
+            <p>Navegue pelas abas na lateral esquerda e preencha os campos, como em qualquer formulário online. O aplicativo se adapta se você escolher o modo <strong>Simplificado</strong> na primeira aba.</p>
+
+            <h3>2. Salve seu Trabalho (Essencial!)</h3>
+            <p>O aplicativo oferece duas formas de salvar:</p>
+            <ul>
+                <li><strong>Salvamento Automático:</strong> Seu progresso é salvo no cache do navegador a cada instante. Se você fechar a aba e abrir novamente, seu trabalho estará lá.</li>
+                <li><strong>Backup em Arquivo (Recomendado):</strong> Para garantir a segurança dos seus dados ou para movê-los para outro computador, use o botão <strong><i class="fas fa-save"></i> Salvar</strong>. Isso criará um arquivo <span class="code-snippet">.etp.json</span>. <strong>Crie o hábito de fazer isso regularmente!</strong></li>
+            </ul>
+        </section>
+
+        <section id="configuracao-ia">
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i>Ativando o Assistente de IA (Opcional)</h2>
+            <p>Quando estiver pronto para ter uma ajuda extra, você pode ativar o assistente de Inteligência Artificial. <strong>Esta etapa é totalmente opcional.</strong></p>
+            <div class="info-box">
+                Para ativar a IA, você precisa de uma "chave de acesso" (API Key). É um processo <strong>gratuito</strong>, <strong>seguro</strong> e que você só precisa fazer <strong>uma vez</strong>.
+            </div>
+            
+            <h3>Como Obter sua Chave em 1 Minuto</h3>
+            <ol>
+                <li>Acesse o site: <a href="https://console.groq.com/keys" target="_blank">https://console.groq.com/keys</a></li>
+                <li>Faça o login com sua conta do Google ou GitHub.</li>
+                <li>Clique no botão <strong>"Create API Key"</strong>.</li>
+                <li>Dê um nome para sua chave (ex: <span class="code-snippet">ETP-XYZ</span>) e clique em "Create".</li>
+                <li><strong>Atenção:</strong> O site irá gerar uma chave que começa com <span class="code-snippet">gsk_...</span>. Copie esta chave imediatamente, pois ela só será exibida uma vez!</li>
+            </ol>
+
+            <h3>Onde Inserir a Chave no Aplicativo</h3>
+            <ol>
+                <li>No Gerador de ETP, clique no ícone de engrenagem (⚙️) na barra de ferramentas superior.</li>
+                <li>Na janela que se abrir, cole a chave que você copiou no campo <strong>"Chave de API (Groq)"</strong>.</li>
+                <li>No campo "Seleção de Modelos de LLM", a opção "Usar modelos padrão recomendados" é a ideal para a maioria dos casos, pois o aplicativo gerencia tudo para você. A opção "Configurar modelos personalizados" é voltada para usuários avançados.</li>
+                <li>No botão "Testar conexão", você pode ver se a conexão com a API funcionou. Esta verificação é opcional.</li>
+                <li>Por fim, clique no botão "Salvar e Fechar".</li>
+            </ol>
+
+            <p><strong>Pronto!</strong> A partir de agora, o botão <span class="code-snippet">IA</span> ao lado dos campos e o botão <span class="code-snippet">Gerar Título</span> estarão ativos e prontos para ajudar.</p>
+            <div class="warning-box">
+                <strong>Aviso de Responsabilidade:</strong> A Inteligência Artificial é uma <strong>ferramenta de auxílio</strong>. Suas sugestões podem conter imprecisões. A responsabilidade final pelo conteúdo do ETP é <strong>inteiramente sua</strong>. Sempre revise, valide e adapte as informações.
+            </div>
+        </section>
+
+        <section id="colaboracao">
+            <h2><i class="fa-solid fa-users"></i>Como Colaborar com um Colega</h2>
+            <div class="warning-box">
+                <strong>Importante:</strong> O aplicativo é para uso individual e <strong>não permite edição simultânea</strong> por mais de uma pessoa. Tentar trabalhar no mesmo arquivo ao mesmo tempo resultará em perda de dados.
+            </div>
+            <p>Para trabalhar em equipe de forma segura, siga este processo simples:</p>
+            <ol>
+                <li><strong>Quem está com o arquivo:</strong> Após fazer suas edições, clique em <strong><i class="fas fa-save"></i> Salvar</strong> para gerar o arquivo <span class="code-snippet">.etp.json</span>.</li>
+                <li><strong>Envio:</strong> Envie este arquivo para seu colega (por e-mail, chat etc.).</li>
+                <li><strong>Quem recebe o arquivo:</strong> Abra o aplicativo, clique em <strong><i class="fas fa-folder-open"></i> Abrir</strong> e selecione o arquivo recebido para continuar o trabalho.</li>
+            </ol>
+        </section>
+
+        <section id="exportacao">
+            <h2><i class="fa-solid fa-file-export"></i>Exportando seu ETP como um documento DOCX</h2>
+            <p>
+                Quando terminar o preenchimento, vá para a última aba, <strong>"Consolidação"</strong>, para uma revisão geral de todo o conteúdo. No topo desta aba, use o botão de exportação para gerar o documento final com um clique:
+            </p>
+            <ul>
+                <li><i class="fas fa-file-word"></i> <strong>Exportar ETP:</strong> Gera um arquivo Word profissionalmente formatado.</li>
+            </ul>
+            <p>Após exportar seu ETP, se preferir continuar o trabalho fora do ambiente do aplicativo, você pode fazer modificações no documento usando diretamente o programa Microsoft Word.</p>
+            <!--<p>Após exportar seu ETP gerado pelo aplicativo, faça <strong>login no SEI</strong> e entre no processo de contratação em questão.:</p>-->
+            <!--<ol>
+                <li>Gere um novo documento do tipo <strong>"Estudo Técnico Preliminar"</strong> e apague qualquer conteúdo que houver nele, deixando o ETP em branco.</li>
+                <li><strong>Copie</strong> todo o conteúdo do arquivo DOCX que você gerou pelo aplicativo e <strong>cole</strong> no documento ETP em branco do SEI.</li>
+                <li>Agora é só salvar, revisar e assinar seu ETP no SEI.</li>
+            </ol>-->
+            
+        </section>
+
+        <section id="faq">
+            <h2><i class="fa-solid fa-circle-question"></i>Perguntas Frequentes</h2>
+            
+            <details class="faq-item">
+                <summary>Preciso configurar a IA para usar o aplicativo?</summary>
+                <div class="faq-answer">
+                    <strong>Não.</strong> A configuração da IA é totalmente opcional. Você pode usar todas as funções de preenchimento, salvamento e exportação do ETP sem precisar ativar o assistente. A IA é um recurso extra para quem desejar uma ajuda adicional.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>A IA não funciona ou mostra erros. O que fazer?</summary>
+                <div class="faq-answer">
+                    A causa mais comum é um problema na chave de API. Volte para a <strong>Seção "Ativando o Assistente de IA"</strong> deste guia e refaça o passo a passo para garantir que a chave foi criada e inserida corretamente. Verifique também sua conexão com a internet.
+                </div>
+            </details>
+            
+            <details class="faq-item">
+                <summary>É seguro colocar minha chave de API no aplicativo?</summary>
+                <div class="faq-answer">
+                    Sim. A chave é armazenada <strong>exclusivamente no seu navegador, no seu computador</strong>. Ela é enviada diretamente para o serviço da Groq (provedor da IA) quando você solicita ajuda.
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>Meu progresso sumiu! Como evitar?</summary>
+                <div class="faq-answer">
+                    O salvamento automático depende do cache do seu navegador. Se você usar ferramentas de "limpeza de dados" ou o navegador estiver configurado para limpar dados ao fechar, o progresso pode ser perdido. A melhor forma de se proteger é usar regularmente o botão <strong>"Salvar"</strong> para criar backups seguros.
+                </div>
+            </details>
+            
+        </section>
+
+    </div>
+
+</body>
+</html>
